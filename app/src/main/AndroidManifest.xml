@@ -12,9 +12,18 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".MemoryArrayActivity" />
-        <activity android:name=".EditorActivity" />
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MemoryArrayActivity"
+            android:parentActivityName=".EditorActivity"/>
+        <activity
+            android:name=".EditorActivity"
+            android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>

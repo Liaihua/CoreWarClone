@@ -7,8 +7,26 @@
     tools:context=".EditorActivity">
 
     <!-- TODO Добавить кнопку с настройками (чего?) -->
+    <Toolbar
+        android:id="@+id/editor_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-    <!-- TODO Добавить текстовое поле, служащее местом редактирования -->
+    <!--
+        TODO Добавить текстовое поле, служащее местом редактирования
+        Вопрос: как мне сделать автодополнение в этом поле? Есть конечно вариант с
+        использованием AutoCompleteTextView, но тогда скорее всего оно будет
+        заменять мне весь текст на то, что я выбрал
+    -->
+
+    <AutoCompleteTextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/editor_toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:inputType="textMultiLine"
+        />
 
     <!--
         TODO Сделать скрываемый фрагмент, позволяющий:
