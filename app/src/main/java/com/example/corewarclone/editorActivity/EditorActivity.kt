@@ -1,7 +1,8 @@
-package com.example.corewarclone
+package com.example.corewarclone.editorActivity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.corewarclone.R
 
 class EditorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
