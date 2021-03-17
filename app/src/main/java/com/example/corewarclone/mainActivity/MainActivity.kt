@@ -4,10 +4,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.corewarclone.R
 import kotlin.random.Random
-import kotlin.random.nextInt
 
 class MainActivity : AppCompatActivity() {
     private val programFileManager: ProgramFileManager = ProgramFileManager()
@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
         val programFileAdapter = ProgramFileAdapter(programFileList)
         var pfRecyclerView = findViewById<RecyclerView>(R.id.programs_recycler_view)
         pfRecyclerView.adapter = programFileAdapter
+        pfRecyclerView.layoutManager = LinearLayoutManager(this)
     }
 
     fun newFile(view: View) {
