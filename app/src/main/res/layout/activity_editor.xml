@@ -20,6 +20,7 @@
         заменять мне весь текст на то, что я выбрал
     -->
 
+    <!-- Не подходит -->
     <AutoCompleteTextView
         android:layout_width="match_parent"
         android:layout_height="0dp"

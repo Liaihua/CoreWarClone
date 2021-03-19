@@ -3,6 +3,13 @@ package com.example.corewarclone.mainActivity
 // java.nio.file недоступен из-за того, что версия API, в которой он есть - 26 (Oreo)
 // Повезло повезло
 
+// https://developer.android.com/training/data-storage
+// Так как я собираюсь сохранять текстовые файлы независимо от состояния приложения (допустим,
+// после удаления, то мне следует уделить внимание параграфу "Documents and other files".
+// Так, надеюсь, мне не потребуются лишние костыли с java.io.*
+// Storage Access Framework?
+
+import android.content.Intent
 import android.os.Environment
 import java.io.*
 import java.util.*
@@ -52,7 +59,14 @@ class ProgramFileManager {
     }
 
     // Метод используется для сохранения программы из редактора в папку "redcode/"
-    fun saveProgramFile(name: String, content: String) {
+    fun saveProgramFile(nameUri: String, content: String) {
+        //если (!файл(name).существует())
+        //    файл(name).создать()
+        //файлопоток(name, "r").записать(content)
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {  }
+    }
+
+    fun readProgramFile(nameUri: String) {
 
     }
 }
