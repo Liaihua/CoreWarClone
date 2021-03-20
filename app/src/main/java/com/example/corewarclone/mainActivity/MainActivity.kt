@@ -3,8 +3,8 @@ package com.example.corewarclone.mainActivity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
+<<<<<<< HEAD
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
@@ -13,14 +13,18 @@ import com.example.corewarclone.R
 import com.example.corewarclone.editorActivity.EditorActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+=======
+import android.widget.Button
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.corewarclone.R
+import com.example.corewarclone.editorActivity.EditorActivity
+>>>>>>> 0c4069e1e6111c122338b8f59ce73a16008ca30d
 
-class ProgramFileAdapter(private val programFiles: Array<ProgramFile>) : RecyclerView.Adapter<ProgramFileAdapter.ViewHolder>() {
+class MainActivity : AppCompatActivity() {
+    private val programFileManager: ProgramFileManager = ProgramFileManager()
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val fileNameTextView: TextView
-        val fileLastEditTextView: TextView
-        val fileSizeTextView: TextView
-
+<<<<<<< HEAD
         init {
             fileNameTextView = view.findViewById(R.id.file_name)
             fileLastEditTextView = view.findViewById(R.id.file_date_time)
@@ -33,28 +37,31 @@ class ProgramFileAdapter(private val programFiles: Array<ProgramFile>) : Recycle
             fileSizeTextView.text = pf.size.toString()
         }
     }
+=======
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+>>>>>>> 0c4069e1e6111c122338b8f59ce73a16008ca30d
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.program_file_item, parent, false)
+        val programFileList = programFileManager.listProgramFiles()
+        val programFileAdapter = ProgramFileAdapter(programFileList)
+        val pfRecyclerView = findViewById<RecyclerView>(R.id.programs_recycler_view)
 
-        return ViewHolder(view)
+        pfRecyclerView.adapter = programFileAdapter
+        pfRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        pfRecyclerView.setOnClickListener {
+            openFile(it)
+        }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.fileNameTextView.text = programFiles[position].name
-        holder.fileSizeTextView.text = programFiles[position].size.toString()
-        holder.fileLastEditTextView.text = programFiles[position].last_edit.toString()
-    }
+    // Для данного метода потребуется создание Intent ACTION_OPEN_DOCUMENT
 
-    override fun getItemCount(): Int {
-        return programFiles.size
-    }
-}
+    fun openFile(view: View) {
+        val button = view.findViewById<Button>(R.id.fab)
+        button.text = view.id.toString()
 
-class MainActivity : AppCompatActivity() {
-    val programFileManager: ProgramFileManager = ProgramFileManager()
-
+<<<<<<< HEAD
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -74,5 +81,17 @@ class MainActivity : AppCompatActivity() {
     fun newFile(view: View) {
         val intent = Intent(this, EditorActivity::class.java)
         startActivity(intent)
+=======
+        // Данный Intent должен открывать файл, имя которого указано в extra-ресурсе (как я понял)
+        val editorIntent = Intent(this, EditorActivity::class.java)
+        startActivity(editorIntent)
+    }
+
+    // А для этого - ACTION_CREATE_DOCUMENT
+
+    fun newFile(view: View) {
+        val editorIntent = Intent(this, EditorActivity::class.java)
+        startActivity(editorIntent)
+>>>>>>> 0c4069e1e6111c122338b8f59ce73a16008ca30d
     }
 }
