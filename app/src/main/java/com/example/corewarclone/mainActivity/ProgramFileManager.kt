@@ -22,11 +22,6 @@ data class ProgramFile (val name: String, val last_edit: Long, val size: Long);
 
 class ProgramFileManager {
 
-    // Метод создает директорию "redcode/" (мспользуется в случае, если директория отсутствует)
-    private fun initializeRedcodeDirectory() {
-        File("./$dir_name").mkdir()
-    }
-
     // Метод используется для отображения файлов, которые находятся в поддиректории приложения "redcode/"
 
     fun listProgramFiles() : Array<ProgramFile>? {

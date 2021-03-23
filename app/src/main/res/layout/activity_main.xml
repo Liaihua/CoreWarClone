@@ -18,19 +18,10 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="@string/app_name"/>
 
     </com.google.android.material.appbar.AppBarLayout>
-
-    <!--
-     TODO сделать экземпляр фрагмента, отображающего доступные файлы
-     Фрагмент содержит следующие компоненты:
-        - Имя файла с прогой
-        - Размер файла
-        - Дата создания
-
-     Нужно узнать, каким образом формируются элементы RecyclerView
-    -->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/programs_recycler_view"
@@ -51,6 +42,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
 
         android:onClick="newFile"
-        android:contentDescription="@string/add_program_button" />
+        android:contentDescription="@string/add_program_button"
+        android:text="@string/add_program_button"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
