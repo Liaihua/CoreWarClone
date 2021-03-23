@@ -5,7 +5,7 @@ package com.example.corewarclone.mainActivity
 
 // https://developer.android.com/training/data-storage
 // Так как я собираюсь сохранять текстовые файлы независимо от состояния приложения (допустим,
-// после удаления, то мне следует уделить внимание параграфу "Documents and other files".
+// после удаления), то мне следует уделить внимание параграфу "Documents and other files".
 // Так, надеюсь, мне не потребуются лишние костыли с java.io.*
 // Storage Access Framework?
 
@@ -28,7 +28,7 @@ class ProgramFileManager {
     }
 
     // Метод используется для отображения файлов, которые находятся в поддиректории приложения "redcode/"
-    //
+
     fun listProgramFiles() : Array<ProgramFile>? {
 
         val redcodeDir = File("./$dir_name")

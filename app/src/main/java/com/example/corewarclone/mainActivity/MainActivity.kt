@@ -19,8 +19,10 @@ class MainActivity : AppCompatActivity() {
 
         val programFileList = programFileManager.listProgramFiles()
         val programFileAdapter = ProgramFileAdapter(programFileList) {
+            // Для данной лямбды потребуется создание Intent ACTION_OPEN_DOCUMENT
             val editorIntent = Intent(this, EditorActivity::class.java).apply {
-                // Здесь?
+                // ОНО РАБОТАЕТ!!!
+                putExtra("fileName", it.name)
             }
             startActivity(editorIntent)
         }
@@ -28,17 +30,6 @@ class MainActivity : AppCompatActivity() {
 
         pfRecyclerView.adapter = programFileAdapter
         pfRecyclerView.layoutManager = LinearLayoutManager(this)
-    }
-
-    // Для данного метода потребуется создание Intent ACTION_OPEN_DOCUMENT
-
-    fun openFile(view: View) {
-        val editorIntent = Intent(this, EditorActivity::class.java).apply {
-            // Extra с файлом??
-            println(this.action)
-
-        }
-        startActivity(editorIntent)
     }
 
     // А для этого - ACTION_CREATE_DOCUMENT
