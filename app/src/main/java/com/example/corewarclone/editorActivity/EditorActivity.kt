@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.widget.Toolbar
 import com.example.corewarclone.R
 import com.google.android.material.appbar.AppBarLayout
 
@@ -11,6 +12,8 @@ class EditorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
+        val toolbar = findViewById<Toolbar>(R.id.editor_toolbar) // ???
+        setSupportActionBar(toolbar)                             // ???
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

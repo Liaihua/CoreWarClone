@@ -6,26 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".editorActivity.EditorActivity">
 
-<!--
-    <Toolbar
-        android:id="@+id/editor_toolbar"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:title="@string/default_title"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent">
-    </Toolbar> -->
-    <!--
-        TODO Добавить кнопку с настройками (чего?)
-        Заменить титул на имя редактируемого файла
-    -->
-    <!--
+        app:layout_constraintTop_toTopOf="parent">
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/editor_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        android:title="@string/default_title"/>
+        app:layout_constraintLeft_toLeftOf="parent">
+
+    </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+    <!--
+        TODO Добавить кнопку с настройками (чего?)
+        Заменить титул на имя редактируемого файла
     -->
     <!--
         TODO Добавить текстовое поле, служащее местом редактирования
@@ -33,13 +29,14 @@
     -->
 
     <!-- Не подходит -->
+    <!--
     <AutoCompleteTextView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:inputType="textMultiLine"/>
-
+-->
     <!--
         TODO Сделать диалоговое окно/скрываемый фрагмент, позволяющий:
         - Посмотреть bin-версию проги
