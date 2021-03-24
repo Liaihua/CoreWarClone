@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +20,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        println(menuInflater)
         val programFileList = programFileManager.listProgramFiles()
         val programFileAdapter = ProgramFileAdapter(programFileList) {
             // Для данной лямбды потребуется создание Intent ACTION_OPEN_DOCUMENT
@@ -36,10 +36,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        println(menu)
-        val inflater = menuInflater
-        inflater.inflate(R.menu.main_menu, menu)
+        menuInflater.inflate(R.menu.main_menu, menu)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.settings_menu_item -> {
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     // А для этого - ACTION_CREATE_DOCUMENT
