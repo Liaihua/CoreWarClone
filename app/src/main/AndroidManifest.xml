@@ -24,7 +24,7 @@
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".editorActivity.EditorActivity"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppTheme"
             android:label="@string/default_title"/> <!-- Как переопределить label? -->
     </application>
 
