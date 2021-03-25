@@ -6,9 +6,11 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import com.example.corewarclone.R
+import com.example.corewarclone.mainActivity.ProgramFileManager
 import com.google.android.material.appbar.AppBarLayout
 
 class EditorActivity : AppCompatActivity() {
+    private val programFileManager = ProgramFileManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
@@ -26,6 +28,10 @@ class EditorActivity : AppCompatActivity() {
         }
 
         R.id.save_menu_item -> {
+            val programText = findViewById<TextProcessor>(R.id.text_processor).text
+            if(programText.isNullOrEmpty())
+                true
+            // Здесь должна быть сохранялка, но мне нужно передать ссылку на экземпляр ProgramFileManager
             true
         }
 

@@ -12,7 +12,7 @@ import com.example.corewarclone.editorActivity.EditorActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 
 class MainActivity : AppCompatActivity() {
-    private val programFileManager: ProgramFileManager = ProgramFileManager()
+    private val programFileManager: ProgramFileManager = ProgramFileManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

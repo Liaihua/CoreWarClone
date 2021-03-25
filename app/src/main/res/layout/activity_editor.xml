@@ -11,6 +11,7 @@
         https://habr.com/ru/post/509300/
     -->
     <com.example.corewarclone.editorActivity.TextProcessor
+        android:id="@+id/text_processor"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#00FFFFFF"

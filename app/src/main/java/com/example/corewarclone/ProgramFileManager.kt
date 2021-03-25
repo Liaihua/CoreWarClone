@@ -20,7 +20,7 @@ const val dir_name = "redcode";
 // ProgramFile используется для представления основных файлов, хранимых в папке приложения
 data class ProgramFile (val name: String, val last_edit: Long, val size: Long);
 
-class ProgramFileManager {
+object ProgramFileManager {
 
     // Метод используется для отображения файлов, которые находятся в поддиректории приложения "redcode/"
 
