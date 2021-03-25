@@ -8,7 +8,18 @@
     <!--
         TODO Добавить кнопку с настройками (чего?)
         Заменить титул на имя редактируемого файла
+        https://habr.com/ru/post/509300/
     -->
+    <com.example.corewarclone.editorActivity.TextProcessor
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00FFFFFF"
+        android:inputType="textMultiLine"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="12sp"
+        android:textColor="@color/dark_font"
+        android:gravity="top"/>
     <!--
         TODO Добавить текстовое поле, служащее местом редактирования
         Ищи статью на Хабре
