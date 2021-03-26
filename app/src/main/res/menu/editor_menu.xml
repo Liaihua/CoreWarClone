@@ -12,6 +12,9 @@
         android:icon="@drawable/ic_baseline_save_24"
         app:showAsAction="ifRoom"/>
     <item
+        android:id="@+id/save_as_menu_item"
+        android:title="@string/save_as_menu_item_title"/>
+    <item
         android:id="@+id/binary_menu_item"
         android:title="@string/binary_menu_item_title"/>
     <item

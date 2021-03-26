@@ -7,13 +7,30 @@ import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import com.example.corewarclone.R
 import com.example.corewarclone.mainActivity.ProgramFileManager
-import com.google.android.material.appbar.AppBarLayout
 
+// Твоюж, ты же в курсе, что у тебя есть extra-данные
 class EditorActivity : AppCompatActivity() {
     private val programFileManager = ProgramFileManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
+        setSupportActionBar(findViewById(R.id.editor_toolbar))
+
+        selectToolbarTitle()
+    }
+
+    fun selectToolbarTitle() {
+        val toolbar = findViewById<Toolbar>(R.id.editor_toolbar)
+        val fileName = intent.dataString
+
+        if(fileName != null)
+        {
+            // = fileName
+        }
+        else
+        {
+            // = resources.getString(R.string.default_title)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -24,14 +41,28 @@ class EditorActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.run_menu_item -> {
+            val programText = findViewById<TextProcessor>(R.id.text_processor).text
+            if(programText.isNullOrEmpty())
+                true
+
             true
         }
 
         R.id.save_menu_item -> {
-            val programText = findViewById<TextProcessor>(R.id.text_processor).text
-            if(programText.isNullOrEmpty())
+            val sourceCode = findViewById<TextProcessor>(R.id.text_processor).text
+            if(sourceCode.isNullOrEmpty())
                 true
-            // Здесь должна быть сохранялка, но мне нужно передать ссылку на экземпляр ProgramFileManager
+            // Добавь работу с именем файла
+            true
+        }
+
+        R.id.save_as_menu_item -> {
+            val sourceCode = findViewById<TextProcessor>(R.id.text_processor).text
+            if(sourceCode.isNullOrEmpty())
+                true
+            // Добавь диалоговое окно
+            var dialogFragment = ProgramFileDialogFragment(sourceCode!!)
+            dialogFragment.show(supportFragmentManager, "save_file")
             true
         }
 

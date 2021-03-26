@@ -13,4 +13,8 @@
     <string name="delete_menu_item_title">Delete</string>
     <string name="settings_menu_item">Settings</string>
     <string name="binary_menu_item_title">Binary version</string>
+    <string name="add_file_dialog_title">Save as</string>
+    <string name="add_file_dialog_positive">SAVE</string>
+    <string name="add_file_dialog_negative">CANCEL</string>
+    <string name="save_as_menu_item_title">Save As</string>
 </resources>

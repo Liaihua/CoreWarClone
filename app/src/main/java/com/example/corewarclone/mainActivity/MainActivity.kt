@@ -6,13 +6,14 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.example.corewarclone.R
 import com.example.corewarclone.editorActivity.EditorActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 
 class MainActivity : AppCompatActivity() {
-    private val programFileManager: ProgramFileManager = ProgramFileManager
+    private val programFileManager = ProgramFileManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,8 +23,7 @@ class MainActivity : AppCompatActivity() {
         val programFileAdapter = ProgramFileAdapter(programFileList) {
             // Для данной лямбды потребуется создание Intent ACTION_OPEN_DOCUMENT
             val editorIntent = Intent(this, EditorActivity::class.java).apply {
-                // ОНО РАБОТАЕТ!!!
-                putExtra("fileName", it.name)
+                data = it.name.toUri()
             }
             startActivity(editorIntent)
         }

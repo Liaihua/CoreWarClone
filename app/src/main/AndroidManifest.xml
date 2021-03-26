@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.corewarclone">
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <!-- И снова двойной toolbar. И снова я не могу -->
+    <!-- И снова двойной editor_toolbar. И снова я не могу -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -24,7 +24,7 @@
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".editorActivity.EditorActivity"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme.NoActionBar"
             android:label="@string/default_title"/> <!-- Как переопределить label? -->
     </application>
 
