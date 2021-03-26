@@ -25,11 +25,8 @@ class EditorActivity : AppCompatActivity() {
 
         if(fileName != null)
         {
+            toolbar.title = fileName
             // = fileName
-        }
-        else
-        {
-            // = resources.getString(R.string.default_title)
         }
     }
 
