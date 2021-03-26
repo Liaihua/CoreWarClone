@@ -19,14 +19,13 @@ class EditorActivity : AppCompatActivity() {
         selectToolbarTitle()
     }
 
-    fun selectToolbarTitle() {
+    private fun selectToolbarTitle() {
         val toolbar = findViewById<Toolbar>(R.id.editor_toolbar)
         val fileName = intent.dataString
 
         if(fileName != null)
         {
             toolbar.title = fileName
-            // = fileName
         }
     }
 
@@ -46,10 +45,20 @@ class EditorActivity : AppCompatActivity() {
         }
 
         R.id.save_menu_item -> {
+            val fileName = intent.data
             val sourceCode = findViewById<TextProcessor>(R.id.text_processor).text
             if(sourceCode.isNullOrEmpty())
                 true
-            // Добавь работу с именем файла
+            if(fileName == null)
+            {
+                val dialogFragment = ProgramFileDialogFragment(sourceCode!!)
+                dialogFragment.show(supportFragmentManager, "save_file")
+            }
+            else
+            {
+                programFileManager.saveProgramFile(fileName.toString(), sourceCode.toString())
+            }
+            // Работу этого кода не проверял. Нужно уже делать собственно PFManager
             true
         }
 
