@@ -19,6 +19,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Так как MainActivity является стартовой точкой запуска приложения, думаю,
+        // пока что такой способ инициализации свойства сойдет
+        programFileManager.contextDir = programFileManager.contextDir ?: this.filesDir
+
         val programFileList = programFileManager.listProgramFiles()
         val programFileAdapter = ProgramFileAdapter(programFileList) {
             // Для данной лямбды потребуется создание Intent ACTION_OPEN_DOCUMENT
@@ -38,7 +42,17 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    //override fun onActivityResult() {
+
+    //}
+
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+    // Как насчет того, чтобы сохранять выбранную директорию в какой-нибудь файл приложения?
+        R.id.choose_folder_menu_item -> {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+            //startActivityForResult(intent, Intent.ACTION)
+            true
+        }
         R.id.settings_menu_item -> {
             true
         }

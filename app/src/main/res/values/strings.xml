@@ -17,4 +17,5 @@
     <string name="add_file_dialog_positive">SAVE</string>
     <string name="add_file_dialog_negative">CANCEL</string>
     <string name="save_as_menu_item_title">Save As</string>
+    <string name="choose_folder_menu_item_title">Choose a folder</string>
 </resources>

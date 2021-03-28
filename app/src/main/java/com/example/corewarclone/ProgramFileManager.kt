@@ -9,59 +9,104 @@ package com.example.corewarclone.mainActivity
 // Так, надеюсь, мне не потребуются лишние костыли с java.io.*
 // Storage Access Framework?
 
+import android.content.Context
 import android.content.Intent
-import android.os.Environment
 import java.io.*
-import java.util.*
 import kotlin.*
-
-const val dir_name = "redcode";
 
 // ProgramFile используется для представления основных файлов, хранимых в папке приложения
 data class ProgramFile (val name: String, val last_edit: Long, val size: Long);
 
+// Следует добавить методы, которые будут сохранять и возвращать сохраняемый путь к директории,
+// в которой мы будем хранить файлы, в/из файл/файла. Если файл отсутствует/пустой, то мы возвращаем null
+
 object ProgramFileManager {
 
-    // Метод используется для отображения файлов, которые находятся в поддиректории приложения "redcode/"
+    // Переменная для хранения папки с файлом, где хранится имя используемой приложением папки для прог
+    var contextDir: File? = null
+    // Переменная для хранения используемой приложением папки для прог
+    var currentDir: String? = null
+
+    fun saveCurrentDirectory(dirPath: String) {
+        // Сохраняем в памяти запущенного приложения...
+        currentDir = dirPath
+
+        // ... и в постоянном хранилище
+        val internalFile = File(contextDir, "current_dir.txt")
+        internalFile.writeText(dirPath)
+    }
+
+    fun loadCurrentDirectory() : String? {
+        // Я проверяю, есть ли файл, в котором написан путь к используемой папке.
+        // Если нет, я создаю этот файл и возвращаю null.
+        // Затем я смотрю, пустой ли данный файл. Если да, возвращаю null
+        // Если все есть, то я загружаю имя папки в currentDir
+        if(currentDir != null)
+        {
+            return currentDir
+        }
+        else
+        {
+            val internalFile = File(contextDir, "current_dir.txt") // Замени строку на переменную
+            if(!internalFile.exists())
+            {
+                internalFile.createNewFile()
+                return null
+            }
+            val internalFileText = internalFile.readText()
+            if(internalFileText.isBlank())
+                return null
+            return internalFile.readText()
+        }
+    }
 
     fun listProgramFiles() : Array<ProgramFile>? {
 
-        val redcodeDir = File("./$dir_name")
+        val redcodeDirPath = loadCurrentDirectory() ?: return null
 
+        val redcodeDir = File(redcodeDirPath)
+
+        // Почитай документацию наконец
         if(!redcodeDir.exists()) {
-            redcodeDir.mkdir()
-//            return null
+            return null
         }
 
         var programFiles = arrayOf<ProgramFile>()
 
-        val foundFiles: Array<out File>? = redcodeDir.listFiles()
+        val foundFiles = redcodeDir.listFiles()
 
         if (foundFiles != null) {
             for (redcodeFile in foundFiles)
             {
-                val pf = ProgramFile(
+                if(redcodeFile.extension == "red")
+                {
+                    val pf = ProgramFile(
                     redcodeFile.name,
                     redcodeFile.lastModified(),
-                    redcodeFile.totalSpace
-                )
+                    redcodeFile.totalSpace)
 
-                programFiles += pf
+                    programFiles += pf
+                }
             }
         }
 
         return programFiles
     }
 
-    // Метод используется для сохранения программы из редактора в папку "redcode/"
+    // Метод используется для сохранения программы из редактора в папку
     fun saveProgramFile(nameUri: String, content: String) {
-        //если (!файл(name).существует())
-        //    файл(name).создать()
-        //файлопоток(name, "r").записать(content)
-        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {  }
+        val savedProgramFile = File(currentDir, nameUri)
+        savedProgramFile.writeText(content, Charsets.UTF_8)
     }
 
-    fun readProgramFile(nameUri: String) {
+    // Метод для чтения программы из файла
+    fun readProgramFile(nameUri: String) : String {
+        val programFile = File(currentDir, nameUri)
+        return programFile.readText(Charsets.UTF_8)
+    }
 
+    fun deleteProgramFile(nameUri: String) {
+        val programFile = File(currentDir, nameUri)
+        programFile.delete()
     }
 }
