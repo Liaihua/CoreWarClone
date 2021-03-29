@@ -51,8 +51,9 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == ACTION_CHOOSE_DIR && resultCode == RESULT_OK)
         {
-            // играюсь со штуками, чтобы заменить непонятный content://... на просто "/storage/emulated/0/redcode/bydlokod/..."
+            // TODO Заменить URL с "content://..." на "/storage/emulated/0/redcode/bydlokod/..."
             val dirString = data?.data?.path ?: return
+
             println(DocumentsContract.buildChildDocumentsUriUsingTree(data.data, ""))
             println(DocumentFile.fromTreeUri(application, data.data!!)?.uri.toString())
 
@@ -63,7 +64,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         // Как насчет того, чтобы сохранять выбранную директорию в какой-нибудь файл приложения?
-        // Блин блин блин блин
         R.id.choose_folder_menu_item -> {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
             startActivityForResult(intent, ACTION_CHOOSE_DIR)

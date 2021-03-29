@@ -62,7 +62,9 @@ object ProgramFileManager {
 
     fun listProgramFiles() : Array<ProgramFile>? {
 
-        val redcodeDirPath = loadCurrentDirectory() ?: return null
+        // TODO Проверь, работает ли данный метод на какой-нибудь директории, пока у тебя нет
+        //  решения проблемы с Intent.data -> String
+        val redcodeDirPath = "/storage/emulated/0/redcode/" //loadCurrentDirectory() ?: return null
 
         val redcodeDir = File(redcodeDirPath)
 

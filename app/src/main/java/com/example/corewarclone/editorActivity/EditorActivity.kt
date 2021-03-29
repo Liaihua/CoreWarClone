@@ -8,7 +8,6 @@ import androidx.appcompat.widget.Toolbar
 import com.example.corewarclone.R
 import com.example.corewarclone.mainActivity.ProgramFileManager
 
-// Твоюж, ты же в курсе, что у тебя есть extra-данные
 class EditorActivity : AppCompatActivity() {
     private val programFileManager = ProgramFileManager
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,43 +34,49 @@ class EditorActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.run_menu_item -> {
-            val programText = findViewById<TextProcessor>(R.id.text_processor).text
-            if(programText.isNullOrEmpty())
+    override fun onOptionsItemSelected(item: MenuItem) : Boolean {
+        val sourceCode = findViewById<TextProcessor>(R.id.text_processor).text
+        when (item.itemId) {
+            R.id.run_menu_item -> {
+                if(sourceCode.isNullOrEmpty())
+                    true
+                // Вызов MemoryArrayActivity
                 true
+            }
 
-            true
-        }
-
-        R.id.save_menu_item -> {
-            val fileName = intent.data
-            val sourceCode = findViewById<TextProcessor>(R.id.text_processor).text
-            if(sourceCode.isNullOrEmpty())
+           R.id.save_menu_item -> {
+               // TODO Сделать в методе проверку на наличие файла в папке
+               // TODO Добавь в конце концов расширение в шаблоне имени файла
+                val fileName = intent.data
+                if(sourceCode.isNullOrEmpty())
+                    true
+                if(fileName == null)
+                {
+                    val dialogFragment = ProgramFileDialogFragment(sourceCode!!)
+                    dialogFragment.show(supportFragmentManager, "save_file")
+                }
+                else
+                {
+                    programFileManager.saveProgramFile(fileName.toString(), sourceCode.toString())
+                }
+                // Работу этого кода не проверял
                 true
-            if(fileName == null)
-            {
-                val dialogFragment = ProgramFileDialogFragment(sourceCode!!)
+            }
+
+            R.id.save_as_menu_item -> {
+                if(sourceCode.isNullOrEmpty())
+                    true
+                // Добавь диалоговое окно
+                var dialogFragment = ProgramFileDialogFragment(sourceCode!!)
                 dialogFragment.show(supportFragmentManager, "save_file")
-            }
-            else
-            {
-                programFileManager.saveProgramFile(fileName.toString(), sourceCode.toString())
-            }
-            // Работу этого кода не проверял. Нужно уже делать собственно PFManager
-            true
-        }
-
-        R.id.save_as_menu_item -> {
-            val sourceCode = findViewById<TextProcessor>(R.id.text_processor).text
-            if(sourceCode.isNullOrEmpty())
                 true
-            // Добавь диалоговое окно
-            var dialogFragment = ProgramFileDialogFragment(sourceCode!!)
-            dialogFragment.show(supportFragmentManager, "save_file")
-            true
-        }
+            }
 
-        else -> super.onOptionsItemSelected(item)
+            else ->{
+                super.onOptionsItemSelected(item)
+                true
+            }
+        }
+        return true
     }
 }
