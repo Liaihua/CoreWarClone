@@ -4,10 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.corewarclone.R
 
 class ProgramFileAdapter(private val programFiles: Array<ProgramFile>?, val onClick: (ProgramFile) -> Unit) : RecyclerView.Adapter<ProgramFileAdapter.ViewHolder>() {
+
+    var ProgramFiles : Array<ProgramFile>? = programFiles
 
     class ViewHolder(view: View, val onClick: (ProgramFile) -> Unit) : RecyclerView.ViewHolder(view) {
 
@@ -32,18 +35,18 @@ class ProgramFileAdapter(private val programFiles: Array<ProgramFile>?, val onCl
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if(programFiles != null) {
-            holder.bind(programFiles[position])
+        if(ProgramFiles != null) {
+            holder.bind(ProgramFiles!![position])
             holder.itemView.setOnClickListener {
-                onClick(programFiles[position])
+                onClick(ProgramFiles!![position])
             }
         }
     }
 
     override fun getItemCount(): Int {
-        if(programFiles == null)
+        if(ProgramFiles == null)
             return 0 // Хм, а у меня не возникнет проблем из-за отсутствия различия
                      // между отсутствием папки и отсутствием файлов в папке?
-        return programFiles.size
+        return ProgramFiles!!.size
     }
 }
