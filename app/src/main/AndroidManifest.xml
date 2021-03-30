@@ -25,6 +25,7 @@
         <activity
             android:name=".editorActivity.EditorActivity"
             android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="landscape"
             android:label="@string/default_title"/>
     </application>
 

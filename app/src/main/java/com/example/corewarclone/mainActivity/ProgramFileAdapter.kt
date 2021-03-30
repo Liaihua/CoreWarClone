@@ -21,6 +21,8 @@ class ProgramFileAdapter(private val programFiles: Array<ProgramFile>?, val onCl
         val fileLastEditTextView = view.findViewById<TextView>(R.id.file_date_time)
         val fileSizeTextView = view.findViewById<TextView>(R.id.file_size)
 
+        private fun Double.format(digits: Int) = "%.${digits}f".format(this)
+
         fun bind(pf: ProgramFile) {
             // TODO Отформатировать строки с датой и размером
             this.pf = pf
@@ -28,7 +30,7 @@ class ProgramFileAdapter(private val programFiles: Array<ProgramFile>?, val onCl
             val lastEdit = java.text.SimpleDateFormat("dd.MM.yyyy hh:mm").format(pf.last_edit)
             fileLastEditTextView.text = lastEdit
             val fileSize = pf.size / 1024.0
-            fileSizeTextView.text = "${fileSize}".format() + " KB"
+            fileSizeTextView.text = "${fileSize.format(2)}" + " KB"
         }
     }
 

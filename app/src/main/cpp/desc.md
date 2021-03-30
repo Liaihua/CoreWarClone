@@ -1,4 +1,2 @@
 # C/C++ native section
-This section contains the following components:
-- Redcode Translator
-- Core War VM
+This section will be done when I will get enough time for it
