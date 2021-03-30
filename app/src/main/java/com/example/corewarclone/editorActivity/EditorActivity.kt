@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment
 import com.example.corewarclone.R
 import com.example.corewarclone.mainActivity.MainActivity
 import com.example.corewarclone.mainActivity.ProgramFileManager
+import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.program_file_item.*
 
 class EditorActivity : AppCompatActivity() {
@@ -30,12 +31,17 @@ class EditorActivity : AppCompatActivity() {
     }
 
     private fun selectToolbarTitle() {
+        // TODO Выбрать титул в зависимости от наличия/отсутствия файла
         val toolbar = findViewById<Toolbar>(R.id.editor_toolbar)
         val fileName = intent.dataString
 
         if(fileName != null)
         {
             toolbar.title = fileName
+        }
+        else
+        {
+            toolbar.title = R.string.default_title.toString()
         }
     }
 
@@ -57,8 +63,6 @@ class EditorActivity : AppCompatActivity() {
             }
 
            R.id.save_menu_item -> {
-               // TODO Сделать в методе проверку на наличие файла в папке
-               // TODO Добавь в конце концов расширение в шаблоне имени файла
                 val fileName = intent.data
                 if(fileName == null)
                 {
@@ -69,23 +73,19 @@ class EditorActivity : AppCompatActivity() {
                 {
                     programFileManager.saveProgramFile(fileName.toString(), sourceCode)
                 }
-                // Работу этого кода не проверял
+                selectToolbarTitle()
                 return true
             }
 
             R.id.save_as_menu_item -> {
-                // Добавь диалоговое окно
                 val dialogFragment = ProgramFileDialogFragment(sourceCode)
                 dialogFragment.show(supportFragmentManager, "save_file")
+                selectToolbarTitle()
                 return true
             }
 
             R.id.delete_menu_item -> {
                 val dialogFragment = DeleteDialogFragment(intent.data.toString())
-                // dialogFragment.showDialog()
-                // if(intent.data != null)
-                // if(dialogFragment.result == RESULT_OK)
-                // programFileManager.deleteProgramFile(file)
                 dialogFragment.show(supportFragmentManager, "delete_file")
                 return true
             }

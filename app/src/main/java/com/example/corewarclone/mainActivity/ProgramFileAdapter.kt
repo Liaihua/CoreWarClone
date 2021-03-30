@@ -1,8 +1,10 @@
 package com.example.corewarclone.mainActivity
 
+import android.icu.text.SimpleDateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SimpleAdapter
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
@@ -20,10 +22,13 @@ class ProgramFileAdapter(private val programFiles: Array<ProgramFile>?, val onCl
         val fileSizeTextView = view.findViewById<TextView>(R.id.file_size)
 
         fun bind(pf: ProgramFile) {
+            // TODO Отформатировать строки с датой и размером
             this.pf = pf
             fileNameTextView.text = pf.name
-            fileLastEditTextView.text = pf.last_edit.toString()
-            fileSizeTextView.text = pf.size.toString()
+            val lastEdit = java.text.SimpleDateFormat("dd.MM.yyyy hh:mm").format(pf.last_edit)
+            fileLastEditTextView.text = lastEdit
+            val fileSize = pf.size / 1024.0
+            fileSizeTextView.text = "${fileSize}".format() + " KB"
         }
     }
 

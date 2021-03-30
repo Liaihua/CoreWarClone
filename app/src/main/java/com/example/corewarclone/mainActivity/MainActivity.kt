@@ -58,7 +58,6 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == ACTION_CHOOSE_DIR && resultCode == RESULT_OK)
         {
-            // TODO Заменить URL с "content://..." на "/storage/emulated/0/redcode/bydlokod/..."
             val dirString = programFileManager.getDirectoryPathFromUri(this, data!!.data!!)
 
             if (dirString != null) {

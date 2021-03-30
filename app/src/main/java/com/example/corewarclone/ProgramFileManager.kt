@@ -15,6 +15,8 @@ import android.os.Environment
 import android.provider.DocumentsContract.getTreeDocumentId
 import androidx.core.content.ContextCompat
 import java.io.*
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.*
 import kotlin.*
 
@@ -118,8 +120,6 @@ object ProgramFileManager {
 
     fun listProgramFiles() : Array<ProgramFile>? {
 
-        // TODO Проверь, работает ли данный метод на какой-нибудь директории, пока у тебя нет
-        //  решения проблемы с Intent.data -> String
         val redcodeDirPath = loadCurrentDirectory() ?: return null
 
         val redcodeDir = File(redcodeDirPath)
@@ -141,7 +141,7 @@ object ProgramFileManager {
                     val pf = ProgramFile(
                         redcodeFile.name,
                         redcodeFile.lastModified(),
-                        redcodeFile.totalSpace
+                        redcodeFile.length()
                     )
 
                     programFiles += pf
