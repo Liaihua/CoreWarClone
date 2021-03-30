@@ -10,12 +10,17 @@ package com.example.corewarclone.mainActivity
 // Storage Access Framework?
 
 import android.content.Context
-import android.content.Intent
+import android.net.Uri
+import android.os.Environment
+import android.provider.DocumentsContract.getTreeDocumentId
+import androidx.core.content.ContextCompat
 import java.io.*
+import java.util.*
 import kotlin.*
 
+
 // ProgramFile используется для представления основных файлов, хранимых в папке приложения
-data class ProgramFile (val name: String, val last_edit: Long, val size: Long);
+data class ProgramFile(val name: String, val last_edit: Long, val size: Long);
 
 // Следует добавить методы, которые будут сохранять и возвращать сохраняемый путь к директории,
 // в которой мы будем хранить файлы, в/из файл/файла. Если файл отсутствует/пустой, то мы возвращаем null
@@ -26,6 +31,56 @@ object ProgramFileManager {
     var contextDir: File? = null
     // Переменная для хранения используемой приложением папки для прог
     var currentDir: String? = null
+
+    fun getDirectoryPathFromUri(context: Context, pathUri: Uri) : String? {
+        if(pathUri.scheme == "file")
+            return pathUri.path.toString()
+        val treeId = getTreeDocumentId(pathUri)
+
+        if (treeId != null) {
+
+            //Timber.d("TreeId -> %s", treeId);
+            val paths = treeId.split(":").toTypedArray()
+            val type = paths[0]
+            val subPath = if (paths.size == 2) paths[1] else ""
+            return if ("raw".toLowerCase(Locale.ROOT) == type) {
+                treeId.substring(treeId.indexOf(File.separator))
+            } else if ("PRIMARY".toLowerCase(Locale.ROOT) == type) {
+                Environment.getExternalStorageDirectory().absolutePath + File.separator.toString() + subPath
+            } else {
+                val path = StringBuilder()
+                val pathSegment = treeId.split(":").toTypedArray()
+                if (pathSegment.size == 1) {
+                    path.append(getRemovableStorageRootPath(context, paths[0]))
+                } else {
+                    val rootPath: String? = getRemovableStorageRootPath(context, paths[0])
+                    path.append(rootPath).append(File.separator).append(pathSegment[1])
+                }
+                path.toString()
+            }
+        }
+        return null
+    }
+
+    private fun getRemovableStorageRootPath(context: Context, storageId: String): String? {
+        val rootPath = java.lang.StringBuilder()
+        val externalFilesDirs = ContextCompat.getExternalFilesDirs(context, null)
+        for (fileDir in externalFilesDirs) {
+            if (fileDir.path.contains(storageId)) {
+                val pathSegment: List<String> = fileDir.path.split(File.separator)
+                for (segment in pathSegment) {
+                    if (segment == storageId) {
+                        rootPath.append(storageId)
+                        break
+                    }
+                    rootPath.append(segment).append(File.separator)
+                }
+                //rootPath.append(fileDir.getPath().split("/Android")[0]); // faster
+                break
+            }
+        }
+        return rootPath.toString()
+    }
 
     fun saveCurrentDirectory(dirPath: String) {
         // Сохраняем в памяти запущенного приложения...
@@ -64,12 +119,12 @@ object ProgramFileManager {
 
         // TODO Проверь, работает ли данный метод на какой-нибудь директории, пока у тебя нет
         //  решения проблемы с Intent.data -> String
-        val redcodeDirPath = "/storage/emulated/0/redcode/" //loadCurrentDirectory() ?: return null
+        val redcodeDirPath = loadCurrentDirectory() ?: return null
 
         val redcodeDir = File(redcodeDirPath)
 
         // Почитай документацию наконец
-        if(!redcodeDir.exists()) {
+        if(!redcodeDir.exists() || !redcodeDir.isDirectory) {
             return null
         }
 
@@ -83,9 +138,10 @@ object ProgramFileManager {
                 if(redcodeFile.extension == "red")
                 {
                     val pf = ProgramFile(
-                    redcodeFile.name,
-                    redcodeFile.lastModified(),
-                    redcodeFile.totalSpace)
+                        redcodeFile.name,
+                        redcodeFile.lastModified(),
+                        redcodeFile.totalSpace
+                    )
 
                     programFiles += pf
                 }

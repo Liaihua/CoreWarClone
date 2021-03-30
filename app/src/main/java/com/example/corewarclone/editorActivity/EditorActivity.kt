@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
 import com.example.corewarclone.R
+import com.example.corewarclone.mainActivity.MainActivity
 import com.example.corewarclone.mainActivity.ProgramFileManager
 
 class EditorActivity : AppCompatActivity() {
@@ -35,48 +36,44 @@ class EditorActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem) : Boolean {
-        val sourceCode = findViewById<TextProcessor>(R.id.text_processor).text
+        val sourceCode = findViewById<TextProcessor>(R.id.text_processor).text.toString()
+        if(sourceCode.isBlank())
+            return true
+
         when (item.itemId) {
             R.id.run_menu_item -> {
-                if(sourceCode.isNullOrEmpty())
-                    true
                 // Вызов MemoryArrayActivity
-                true
+                return true
             }
 
            R.id.save_menu_item -> {
                // TODO Сделать в методе проверку на наличие файла в папке
                // TODO Добавь в конце концов расширение в шаблоне имени файла
                 val fileName = intent.data
-                if(sourceCode.isNullOrEmpty())
-                    true
                 if(fileName == null)
                 {
-                    val dialogFragment = ProgramFileDialogFragment(sourceCode!!)
+                    val dialogFragment = ProgramFileDialogFragment(sourceCode)
                     dialogFragment.show(supportFragmentManager, "save_file")
                 }
                 else
                 {
-                    programFileManager.saveProgramFile(fileName.toString(), sourceCode.toString())
+                    programFileManager.saveProgramFile(fileName.toString(), sourceCode)
                 }
                 // Работу этого кода не проверял
-                true
+                return true
             }
 
             R.id.save_as_menu_item -> {
-                if(sourceCode.isNullOrEmpty())
-                    true
                 // Добавь диалоговое окно
-                var dialogFragment = ProgramFileDialogFragment(sourceCode!!)
+                val dialogFragment = ProgramFileDialogFragment(sourceCode)
                 dialogFragment.show(supportFragmentManager, "save_file")
-                true
+                return true
             }
 
             else ->{
                 super.onOptionsItemSelected(item)
-                true
+                return true
             }
         }
-        return true
     }
 }

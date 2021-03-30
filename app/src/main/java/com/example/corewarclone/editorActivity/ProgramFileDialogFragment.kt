@@ -10,7 +10,7 @@ import androidx.fragment.app.DialogFragment
 import com.example.corewarclone.R
 import com.example.corewarclone.mainActivity.ProgramFileManager
 
-class ProgramFileDialogFragment(val sourceCode: Editable): DialogFragment() {
+class ProgramFileDialogFragment(val sourceCode: String): DialogFragment() {
     private val programFileManager = ProgramFileManager
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity.let {
@@ -22,7 +22,7 @@ class ProgramFileDialogFragment(val sourceCode: Editable): DialogFragment() {
                     DialogInterface.OnClickListener { dialog, id ->
                         val fileName = getDialog()?.window?.findViewById<EditText>(R.id.file_name_edittext)?.text
                         if(fileName != null)
-                            programFileManager.saveProgramFile(fileName.toString(), sourceCode.toString())
+                            programFileManager.saveProgramFile(fileName.toString(), sourceCode)
                     })
                 .setNegativeButton(R.string.add_file_dialog_negative,
                     DialogInterface.OnClickListener { dialog, id ->

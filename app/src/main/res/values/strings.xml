@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CoreWar Clone</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="default_title">New file</string>
+    <string name="default_title">new_file.red</string>
     <string name="add_program_button">Add program file</string>
 
     <string-array name="opcodes">

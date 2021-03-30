@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.FileUtils
 import android.provider.DocumentsContract
 import android.view.Menu
 import android.view.MenuItem
@@ -14,6 +15,7 @@ import com.example.corewarclone.R
 import com.example.corewarclone.editorActivity.EditorActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.documentfile.provider.DocumentFile
+import kotlin.random.Random
 
 const val ACTION_CHOOSE_DIR = 0xdead
 
@@ -52,13 +54,15 @@ class MainActivity : AppCompatActivity() {
         if(requestCode == ACTION_CHOOSE_DIR && resultCode == RESULT_OK)
         {
             // TODO Заменить URL с "content://..." на "/storage/emulated/0/redcode/bydlokod/..."
-            val dirString = data?.data?.path ?: return
+            val dirString = programFileManager.getDirectoryPathFromUri(this, data!!.data!!)
 
             println(DocumentsContract.buildChildDocumentsUriUsingTree(data.data, ""))
             println(DocumentFile.fromTreeUri(application, data.data!!)?.uri.toString())
 
             // programFileManager.saveCurrentDirectory(dirString)
-            updateRecyclerView()
+            if (dirString != null) {
+                updateRecyclerView(dirString)
+            }
         }
     }
 
@@ -75,15 +79,19 @@ class MainActivity : AppCompatActivity() {
         else -> super.onOptionsItemSelected(item)
     }
 
-    private fun updateRecyclerView() {
+    private fun updateRecyclerView(dirPath: String) {
         val pfRecyclerView = findViewById<RecyclerView>(R.id.programs_recycler_view)
+        programFileManager.saveCurrentDirectory(dirPath)
         (pfRecyclerView.adapter as ProgramFileAdapter).ProgramFiles = programFileManager.listProgramFiles()
-        (pfRecyclerView.adapter as ProgramFileAdapter).ProgramFiles = arrayOf(ProgramFile("test", 0, 0))
+        // Проверка обновления RecyclerView
+        (pfRecyclerView.adapter as ProgramFileAdapter).ProgramFiles = arrayOf(ProgramFile("test", 0, Random.nextLong()))
         pfRecyclerView.adapter?.notifyDataSetChanged()
     }
 
     // А для этого - ACTION_CREATE_DOCUMENT
     fun newFile(view: View) {
+        if(programFileManager.currentDir == null)
+            return
         val editorIntent = Intent(this, EditorActivity::class.java)
         startActivity(editorIntent)
     }
