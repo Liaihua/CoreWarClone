@@ -1,13 +1,18 @@
 package com.example.corewarclone.editorActivity
 
+import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.SpannableStringBuilder
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.DialogFragment
 import com.example.corewarclone.R
 import com.example.corewarclone.mainActivity.MainActivity
 import com.example.corewarclone.mainActivity.ProgramFileManager
+import kotlinx.android.synthetic.main.program_file_item.*
 
 class EditorActivity : AppCompatActivity() {
     private val programFileManager = ProgramFileManager
@@ -17,6 +22,11 @@ class EditorActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.editor_toolbar))
 
         selectToolbarTitle()
+        val textProcessor = findViewById<TextProcessor>(R.id.text_processor)
+        if(intent.dataString != null) {
+            textProcessor.text = SpannableStringBuilder(
+                programFileManager.readProgramFile(intent.dataString!!))
+        }
     }
 
     private fun selectToolbarTitle() {
@@ -67,6 +77,16 @@ class EditorActivity : AppCompatActivity() {
                 // Добавь диалоговое окно
                 val dialogFragment = ProgramFileDialogFragment(sourceCode)
                 dialogFragment.show(supportFragmentManager, "save_file")
+                return true
+            }
+
+            R.id.delete_menu_item -> {
+                val dialogFragment = DeleteDialogFragment(intent.data.toString())
+                // dialogFragment.showDialog()
+                // if(intent.data != null)
+                // if(dialogFragment.result == RESULT_OK)
+                // programFileManager.deleteProgramFile(file)
+                dialogFragment.show(supportFragmentManager, "delete_file")
                 return true
             }
 

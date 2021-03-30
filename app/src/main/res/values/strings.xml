@@ -15,7 +15,9 @@
     <string name="binary_menu_item_title">Binary version</string>
     <string name="add_file_dialog_title">Save as</string>
     <string name="add_file_dialog_positive">SAVE</string>
-    <string name="add_file_dialog_negative">CANCEL</string>
+    <string name="dialog_negative">CANCEL</string>
     <string name="save_as_menu_item_title">Save As</string>
     <string name="choose_folder_menu_item_title">Choose a folder</string>
+    <string name="dialog_delete_program_file">Delete file?</string>
+    <string name="delete_file_dialog_positive">DELETE</string>
 </resources>

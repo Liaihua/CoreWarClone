@@ -111,7 +111,8 @@ object ProgramFileManager {
             val internalFileText = internalFile.readText()
             if(internalFileText.isBlank())
                 return null
-            return internalFile.readText()
+            currentDir = internalFileText
+            return internalFileText
         }
     }
 

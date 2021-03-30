@@ -44,6 +44,11 @@ class MainActivity : AppCompatActivity() {
         pfRecyclerView.layoutManager = LinearLayoutManager(this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateRecyclerView()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return true
@@ -56,12 +61,9 @@ class MainActivity : AppCompatActivity() {
             // TODO Заменить URL с "content://..." на "/storage/emulated/0/redcode/bydlokod/..."
             val dirString = programFileManager.getDirectoryPathFromUri(this, data!!.data!!)
 
-            println(DocumentsContract.buildChildDocumentsUriUsingTree(data.data, ""))
-            println(DocumentFile.fromTreeUri(application, data.data!!)?.uri.toString())
-
-            // programFileManager.saveCurrentDirectory(dirString)
             if (dirString != null) {
-                updateRecyclerView(dirString)
+                programFileManager.saveCurrentDirectory(dirString)
+                updateRecyclerView()
             }
         }
     }
@@ -79,12 +81,9 @@ class MainActivity : AppCompatActivity() {
         else -> super.onOptionsItemSelected(item)
     }
 
-    private fun updateRecyclerView(dirPath: String) {
+    private fun updateRecyclerView() {
         val pfRecyclerView = findViewById<RecyclerView>(R.id.programs_recycler_view)
-        programFileManager.saveCurrentDirectory(dirPath)
         (pfRecyclerView.adapter as ProgramFileAdapter).ProgramFiles = programFileManager.listProgramFiles()
-        // Проверка обновления RecyclerView
-        (pfRecyclerView.adapter as ProgramFileAdapter).ProgramFiles = arrayOf(ProgramFile("test", 0, Random.nextLong()))
         pfRecyclerView.adapter?.notifyDataSetChanged()
     }
 

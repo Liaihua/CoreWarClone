@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.text.Editable
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
 import com.example.corewarclone.R
@@ -24,7 +23,7 @@ class ProgramFileDialogFragment(val sourceCode: String): DialogFragment() {
                         if(fileName != null)
                             programFileManager.saveProgramFile(fileName.toString(), sourceCode)
                     })
-                .setNegativeButton(R.string.add_file_dialog_negative,
+                .setNegativeButton(R.string.dialog_negative,
                     DialogInterface.OnClickListener { dialog, id ->
                         getDialog()?.cancel()
                     })
