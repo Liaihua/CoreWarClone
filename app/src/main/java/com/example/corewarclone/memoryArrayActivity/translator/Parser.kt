@@ -1,6 +1,9 @@
 package com.example.corewarclone.memoryArrayActivity.translator
 
 import java.util.*
+import kotlin.*
+
+const val INSTRUCTION_BYTES_COUNT = 9 // Количество бит на одну инструкцию
 
 data class Error(var line: Int, val description: String)
 
@@ -34,15 +37,17 @@ class Parser {
     )
 
     val addressingModes = arrayOf(
-        "#", // Immediate Address Mode (явное значение)
-        "$", // Direct Address Mode (прямая адресация, инструкция относительно текущей инструкции)
-        "@", // Indirect Address Mode (непрямая адресация, пока не знаю, каким образом она работает)
-        "<"  // Decrement Indirect Address Mode (то же, что и непрямая адресация, но с инкрементом)
+        '#', // Immediate Address Mode (явное значение)
+        '$', // Direct Address Mode (прямая адресация, инструкция относительно текущей инструкции)
+        '@', // Indirect Address Mode (непрямая адресация, пока не знаю, каким образом она работает)
+        '<'  // Decrement Indirect Address Mode (то же, что и непрямая адресация, но с инкрементом)
     )
 
     var parsedLabels = HashMap<String, Int>()
 
     var parsedInstructions = ByteArray(0)
+
+    private fun getCharAt(string: String, index: Int) : Char = string[index]
 
     fun convertInt32ToByteArray(value: Int) : ByteArray {
         val array = ByteArray(4)
@@ -61,7 +66,7 @@ class Parser {
         if(line.isBlank())
             return null
 
-        val instruction = line.split(" ", limit = 2).filter { it.isBlank() }
+        val instruction = line.split(" ", limit = 2).filter { it.isNotBlank() }
 
         val opcodeResult = parseOpcode(instruction[0]) // Опкод
         if(opcodeResult != null)
@@ -74,22 +79,23 @@ class Parser {
         return null
     }
 
+    // TODO Сделать обработку отрицательных значений, т.е. весь отрицательный мусор за 2 байтами
     fun parseOperands(operands: String) : Error? {
         val parsedOperands = operands.replace(" ", "").split(operandSeparator)
 
         if(parsedOperands.count() != 2) // Разделитель отсутствует
-            return Error (line = -1, description = "ERROR_WRONG_SEPARATOR")
+            return Error (line = -1, description = "ERROR_NO_SEPARATOR")
 
         val operandA = parsedOperands[0]
         var operandAMode = 1 // Режим прямой адресации, в случае если у операнда не указан другой режим
         var operandAValue = operandA.toIntOrNull()
 
         if(operandAValue == null) {
-            if(addressingModes.none{ it.equals(operandA[0]) }){
+            if(addressingModes.none{ it == operandA[0] }){
                 return Error(line = -1, description = "ERROR_WRONG_ADDRESSING_MODE_OPERAND_A")
             }
             else {
-                operandAMode = addressingModes.indexOf(operandA[0].toString())
+                operandAMode = addressingModes.indexOf(operandA[0])
                 operandAValue = operandA.drop(1).toIntOrNull() // Убираем первый символ
                 if(operandAValue == null) {
                     return Error(line = -1, description = "ERROR_WRONG_VALUE_OPERAND_A")
@@ -100,7 +106,7 @@ class Parser {
             }
         }
 
-        operandAValue = operandAValue.or(operandAMode shl 16)
+        operandAValue = operandAValue.and(0x0000FFFF).or(operandAMode shl 16)
         parsedInstructions += convertInt32ToByteArray(operandAValue)
 
         val operandB = parsedOperands[1]
@@ -108,11 +114,11 @@ class Parser {
         var operandBValue = operandB.toIntOrNull()
 
         if(operandBValue == null) {
-            if(addressingModes.none {it.equals(operandB[0])}) {
+            if(addressingModes.none { it == operandB[0] }) {
                 return Error(line = -1, description = "ERROR_WRONG_ADDRESSING_MODE_OPERAND_B")
             }
             else {
-                operandBMode = addressingModes.indexOf(operandB[0].toString())
+                operandBMode = addressingModes.indexOf(operandB[0])
                 operandBValue = operandB.drop(1).toIntOrNull()
                 if(operandBValue == null) {
                     return Error (line = -1, description = "ERROR_WRONG_VALUE_OPERAND_B")
@@ -122,7 +128,7 @@ class Parser {
                 }
             }
         }
-        operandBValue = operandBValue.or(operandBMode shl 16)
+        operandBValue = operandBValue.and(0x0000FFFF).or(operandBMode shl 16)
         parsedInstructions += convertInt32ToByteArray(operandBValue)
 
         return null
@@ -149,9 +155,10 @@ class Parser {
 
             if (instruction.isNotBlank())
                 instructionsCount++
-            else
+            else {
+                line++
                 continue
-
+            }
             val result = parseInstruction(instruction)
             if(result == null) {
                 line++

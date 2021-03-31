@@ -1,6 +1,7 @@
 package com.example.corewarclone.editorActivity
 
 import android.app.Dialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -12,8 +13,11 @@ import androidx.fragment.app.DialogFragment
 import com.example.corewarclone.R
 import com.example.corewarclone.mainActivity.MainActivity
 import com.example.corewarclone.mainActivity.ProgramFileManager
+import com.example.corewarclone.memoryArrayActivity.translator.Translator
 import com.google.android.material.appbar.AppBarLayout
 import kotlinx.android.synthetic.main.program_file_item.*
+
+const val ACTION_CHOOSE_REDCODE_FILE = 0xbeef
 
 class EditorActivity : AppCompatActivity() {
     private val programFileManager = ProgramFileManager
@@ -51,6 +55,34 @@ class EditorActivity : AppCompatActivity() {
         return true
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == ACTION_CHOOSE_REDCODE_FILE && resultCode == RESULT_OK) {
+            val dirString = programFileManager.getDirectoryPathFromUri(this, data?.data!!)
+
+            if(dirString != null)
+            {
+                if(dirString.endsWith(".red"))
+                {
+                    
+                }
+            }
+        }
+    }
+
+    private fun saveFile (sourceCode: String) {
+        val fileName = intent.data
+        if(fileName == null)
+        {
+            val dialogFragment = ProgramFileDialogFragment(sourceCode)
+            dialogFragment.show(supportFragmentManager, "save_file")
+        }
+        else
+        {
+            programFileManager.saveProgramFile(fileName.toString(), sourceCode)
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem) : Boolean {
         val sourceCode = findViewById<TextProcessor>(R.id.text_processor).text.toString()
         if(sourceCode.isBlank())
@@ -59,20 +91,14 @@ class EditorActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.run_menu_item -> {
                 // Вызов MemoryArrayActivity
+                // Но перед этим нужно сделать вызов Intent.ACTION_OPEN_DOCUMENT, чтобы выбрать вторую программу для компиляции
+                val secondFileIntent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                startActivityForResult(secondFileIntent, ACTION_CHOOSE_REDCODE_FILE)
                 return true
             }
 
            R.id.save_menu_item -> {
-                val fileName = intent.data
-                if(fileName == null)
-                {
-                    val dialogFragment = ProgramFileDialogFragment(sourceCode)
-                    dialogFragment.show(supportFragmentManager, "save_file")
-                }
-                else
-                {
-                    programFileManager.saveProgramFile(fileName.toString(), sourceCode)
-                }
+                saveFile(sourceCode)
                 selectToolbarTitle()
                 return true
             }
@@ -81,6 +107,17 @@ class EditorActivity : AppCompatActivity() {
                 val dialogFragment = ProgramFileDialogFragment(sourceCode)
                 dialogFragment.show(supportFragmentManager, "save_file")
                 selectToolbarTitle()
+                return true
+            }
+
+            R.id.binary_menu_item -> {
+                saveFile(sourceCode)
+                val fileName = intent.data
+                val translator = Translator()
+                val programFileText = programFileManager.readProgramFile(fileName.toString())
+                translator.parser.parseAll(programFileText) // Проверка "парсера". Надо будет заменить на вызов методов транслятора (которые ты еще не сделал)
+                val dialogFragment = AssembledProgramDialogFragment()
+                dialogFragment.show(supportFragmentManager, "assembled_file")
                 return true
             }
 
