@@ -53,8 +53,8 @@ class Parser {
         return array
     }
 
-    fun preprocessComments(programText: String) {
-
+    fun preprocessComments(instructionText: String) : String {
+        return instructionText.split(commentSeparator)[0]
     }
 
     fun parseInstruction(line: String) : Error? {
@@ -143,10 +143,14 @@ class Parser {
         var instructionsCount = 0 // Подсчет инструкций. Необходимо для адресации между меток
         while(line <= instructions.lastIndex)
         {
-            val instruction = instructions[line].trim()
+            var instruction = instructions[line].trim()
+
+            instruction = preprocessComments(instruction)
 
             if (instruction.isNotBlank())
                 instructionsCount++
+            else
+                continue
 
             val result = parseInstruction(instruction)
             if(result == null) {
