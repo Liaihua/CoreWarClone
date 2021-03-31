@@ -2,6 +2,7 @@ package com.example.corewarclone.memoryArrayActivity.translator
 
 import java.util.*
 import kotlin.*
+import kotlin.math.absoluteValue
 
 const val INSTRUCTION_BYTES_COUNT = 9 // Количество бит на одну инструкцию
 
@@ -57,30 +58,49 @@ class Parser {
         array[0] = ((value ushr 24) and 0xFFFF).toByte()
         return array
     }
-
+    // Передает строку без комментария
     fun preprocessComments(instructionText: String) : String {
         return instructionText.split(commentSeparator)[0]
     }
 
-    fun parseInstruction(line: String) : Error? {
+    // Просматривает файл на наличие меток
+    fun preprocessLabels(fileText: String) : Error? {
+        val instructions = fileText.split("\n").filter { it.isNotBlank() }
+        var instructionCount = 0
+        while(instructionCount <= instructions.lastIndex)
+        {
+            val instruction = instructions[instructionCount].trim()
+            val separated = instruction.split(labelSeparator)
+            if(separated.count() == 2)
+            {
+                val label = separated[0].trim()
+                if(label.isBlank())
+                    return Error(line = -1, description = "ERROR_NO_LABEL")
+                parsedLabels[label] = instructionCount
+            }
+            instructionCount++
+        }
+        return null
+    }
+
+    fun parseInstruction(line: String, instructionCount: Int) : Error? {
         if(line.isBlank())
             return null
 
-        val instruction = line.split(" ", limit = 2).filter { it.isNotBlank() }
+        val instruction = line.trim().split(" ", limit = 2).filter { it.isNotBlank() }
 
         val opcodeResult = parseOpcode(instruction[0]) // Опкод
         if(opcodeResult != null)
             return opcodeResult
 
-        val operandResult = parseOperands(instruction[1]) // Операнды
+        val operandResult = parseOperands(instruction[1], instructionCount) // Операнды
         if(operandResult != null)
             return operandResult
 
         return null
     }
 
-    // TODO Сделать обработку отрицательных значений, т.е. весь отрицательный мусор за 2 байтами
-    fun parseOperands(operands: String) : Error? {
+    fun parseOperands(operands: String, instructionCount: Int) : Error? {
         val parsedOperands = operands.replace(" ", "").split(operandSeparator)
 
         if(parsedOperands.count() != 2) // Разделитель отсутствует
@@ -92,15 +112,30 @@ class Parser {
 
         if(operandAValue == null) {
             if(addressingModes.none{ it == operandA[0] }){
-                return Error(line = -1, description = "ERROR_WRONG_ADDRESSING_MODE_OPERAND_A")
+                if(parsedLabels.keys.contains<String>(operandA)) {
+                    operandAValue = parsedLabels[operandA]!! + 1 - instructionCount
+                }
+                else {
+                    return Error(line = -1, description = "ERROR_WRONG_ADDRESSING_MODE_OPERAND_A")
+                }
             }
             else {
                 operandAMode = addressingModes.indexOf(operandA[0])
                 operandAValue = operandA.drop(1).toIntOrNull() // Убираем первый символ
                 if(operandAValue == null) {
-                    return Error(line = -1, description = "ERROR_WRONG_VALUE_OPERAND_A")
+                    var label = operandA
+                    if(operandAMode != -1) { // Если указан режим адресации
+                        label = label.drop(1)
+                    }
+                    if(parsedLabels.keys.contains<String>(label)) // Проверка на наличие метки
+                    {
+                        operandAValue = parsedLabels[label]!! + 1 - instructionCount
+                    }
+                    else {
+                        return Error(line = -1, description = "ERROR_WRONG_VALUE_OPERAND_A")
+                    }
                 }
-                if(operandAValue > 0xFFFF) { // Проверка на переполнение
+                if(operandAValue!!.absoluteValue > 0xFFFF) { // Проверка на переполнение
                     return Error (line = -1, description = "ERROR_OVERFLOW_OPERAND_A")
                 }
             }
@@ -115,15 +150,30 @@ class Parser {
 
         if(operandBValue == null) {
             if(addressingModes.none { it == operandB[0] }) {
-                return Error(line = -1, description = "ERROR_WRONG_ADDRESSING_MODE_OPERAND_B")
+                if(parsedLabels.keys.contains<String>(operandB)) {
+                    operandBValue = parsedLabels[operandB]!! + 1 - instructionCount
+                }
+                else {
+                    return Error(line = -1, description = "ERROR_WRONG_ADDRESSING_MODE_OPERAND_B")
+                }
             }
             else {
                 operandBMode = addressingModes.indexOf(operandB[0])
                 operandBValue = operandB.drop(1).toIntOrNull()
                 if(operandBValue == null) {
-                    return Error (line = -1, description = "ERROR_WRONG_VALUE_OPERAND_B")
+                    var label = operandB
+                    if(operandBMode != -1) {
+                        label = label.drop(1)
+                    }
+                    if(parsedLabels.keys.contains<String>(label))
+                    {
+                        operandBValue = parsedLabels[label]!! + 1 - instructionCount
+                    }
+                    else {
+                        return Error(line = -1, description = "ERROR_WRONG_VALUE_OPERAND_B")
+                    }
                 }
-                if(operandBValue > 0xFFFF) {
+                if(operandBValue.absoluteValue > 0xFFFF) {
                     return Error(line = -1, description = "ERROR_OVERFLOW_OPERAND_B")
                 }
             }
@@ -135,8 +185,8 @@ class Parser {
     }
 
     fun parseOpcode(opcode: String) : Error? {
-        val opcode = opcode.toLowerCase(Locale.ROOT)
-        val opcodeResult = opcodes.indexOf(opcode)
+        val loweredOpcode = opcode.toLowerCase(Locale.ROOT)
+        val opcodeResult = opcodes.indexOf(loweredOpcode)
         if(opcodeResult == -1)
             return Error (line = -1, description = "ERROR_UNKNOWN_OPCODE")
         parsedInstructions += opcodeResult.toByte()
@@ -144,12 +194,18 @@ class Parser {
     }
 
     fun parseAll(fileText: String) : Error? {
+
+        preprocessLabels(fileText)
+
         val instructions = fileText.split("\n")
         var line = 0
         var instructionsCount = 0 // Подсчет инструкций. Необходимо для адресации между меток
+
         while(line <= instructions.lastIndex)
         {
             var instruction = instructions[line].trim()
+
+            instruction = instruction.split(":").last() // Избавляемся от метки, так как мы уже записали ее в HashMap
 
             instruction = preprocessComments(instruction)
 
@@ -159,7 +215,7 @@ class Parser {
                 line++
                 continue
             }
-            val result = parseInstruction(instruction)
+            val result = parseInstruction(instruction, instructionsCount)
             if(result == null) {
                 line++
             }
