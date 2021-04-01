@@ -1,21 +1,15 @@
 package com.example.corewarclone.editorActivity
 
-import android.app.Dialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.DialogFragment
 import com.example.corewarclone.R
-import com.example.corewarclone.mainActivity.MainActivity
 import com.example.corewarclone.mainActivity.ProgramFileManager
 import com.example.corewarclone.memoryArrayActivity.translator.Translator
-import com.google.android.material.appbar.AppBarLayout
-import kotlinx.android.synthetic.main.program_file_item.*
 
 const val ACTION_CHOOSE_REDCODE_FILE = 0xbeef
 
@@ -57,6 +51,7 @@ class EditorActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        // TODO Сделать вызов MemoryArrayActivity, если второй файл валиден
         if(requestCode == ACTION_CHOOSE_REDCODE_FILE && resultCode == RESULT_OK) {
             val dirString = programFileManager.getDirectoryPathFromUri(this, data?.data!!)
 
@@ -114,10 +109,12 @@ class EditorActivity : AppCompatActivity() {
                 saveFile(sourceCode)
                 val fileName = intent.data
                 val translator = Translator()
-                val programFileText = programFileManager.readProgramFile(fileName.toString())
-                translator.parser.parseAll(programFileText) // Проверка "парсера". Надо будет заменить на вызов методов транслятора (которые ты еще не сделал)
-                val dialogFragment = AssembledProgramDialogFragment()
-                dialogFragment.show(supportFragmentManager, "assembled_file")
+                val assembled_program = translator.showBytes(fileName.toString())
+                if(assembled_program != null) {
+                    val dialogFragment = AssembledProgramDialogFragment(assembled_program)
+                    dialogFragment.prettyFormatByteArray(assembled_program)
+                    dialogFragment.show(supportFragmentManager, "assembled_file")
+                }
                 return true
             }
 

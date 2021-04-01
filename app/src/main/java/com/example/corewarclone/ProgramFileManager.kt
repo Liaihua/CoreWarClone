@@ -13,7 +13,9 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.provider.DocumentsContract.getTreeDocumentId
+import android.view.WindowManager
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.processNextEventInCurrentThread
 import java.io.*
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -164,8 +166,23 @@ object ProgramFileManager {
         return programFile.readText(Charsets.UTF_8)
     }
 
+    fun readBinaryFile(nameUri: String) : ByteArray {
+        val binaryFile = File(currentDir, nameUri)
+        return binaryFile.readBytes()
+    }
+
+    fun writeBinaryFile(nameUri: String, content: ByteArray) {
+        val binaryFile = File(currentDir, nameUri)
+        binaryFile.writeBytes(content)
+    }
+
     fun deleteProgramFile(nameUri: String) {
         val programFile = File(currentDir, nameUri)
         programFile.delete()
+    }
+
+    fun isExists(nameUri: String) : Boolean {
+        val file = File(currentDir, nameUri)
+        return file.exists()
     }
 }

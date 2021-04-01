@@ -2,6 +2,7 @@ package com.example.corewarclone.memoryArrayActivity.translator
 
 import java.util.*
 import kotlin.*
+import kotlin.experimental.and
 import kotlin.math.absoluteValue
 
 const val INSTRUCTION_BYTES_COUNT = 9 // Количество бит на одну инструкцию
@@ -49,6 +50,13 @@ class Parser {
     var parsedInstructions = ByteArray(0)
 
     private fun getCharAt(string: String, index: Int) : Char = string[index]
+
+    fun convertInt16ToByteArray(value: Short) : ByteArray {
+        val array = ByteArray(2)
+        array[1] = (value.toInt() and 0xFFFF).toByte()
+        array[0] = ((value.toInt() shr 8) and 0xFFFF).toByte()
+        return array
+    }
 
     fun convertInt32ToByteArray(value: Int) : ByteArray {
         val array = ByteArray(4)
