@@ -68,7 +68,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        // Как насчет того, чтобы сохранять выбранную директорию в какой-нибудь файл приложения?
         R.id.choose_folder_menu_item -> {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
             startActivityForResult(intent, ACTION_CHOOSE_DIR)

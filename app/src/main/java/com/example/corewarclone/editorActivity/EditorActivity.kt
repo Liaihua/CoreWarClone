@@ -61,13 +61,17 @@ class EditorActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         // TODO Сделать вызов MemoryArrayActivity, если второй файл валиден
         if(requestCode == ACTION_CHOOSE_REDCODE_FILE && resultCode == RESULT_OK) {
+            // TODO Сделать/найти другой метод для получения имени файла из Uri
             val dirString = programFileManager.getDirectoryPathFromUri(this, data?.data!!)
 
             if(dirString != null)
             {
                 if(dirString.endsWith(".red"))
                 {
-                    
+                    // Выполнение трансляции второй программы и последующий вызов MemoryArrayActivity/Диалогового окна с ошибкой
+                    // Может, лучше часть этого оставить за пределами этого метода?
+                    val translator = Translator()
+                    translator.translate(dirString)
                 }
             }
         }
@@ -97,7 +101,7 @@ class EditorActivity : AppCompatActivity() {
                 // Но перед этим нужно сделать вызов Intent.ACTION_OPEN_DOCUMENT, чтобы выбрать вторую программу для компиляции
                 // А перед этим нужно сделать проверку обоих файлов на наличие ошибок
                 val secondFileIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                    type = "*.red"
+                    type = "*/*"
                     addCategory(Intent.CATEGORY_OPENABLE)
                 }
                 startActivityForResult(secondFileIntent, ACTION_CHOOSE_REDCODE_FILE)
