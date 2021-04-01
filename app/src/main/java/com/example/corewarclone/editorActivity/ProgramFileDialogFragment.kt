@@ -13,6 +13,7 @@ import com.example.corewarclone.mainActivity.ProgramFileManager
 class ProgramFileDialogFragment(val sourceCode: String): DialogFragment() {
     private val programFileManager = ProgramFileManager
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        retainInstance = true
         return activity.let {
             val builder = AlertDialog.Builder(it)
             val inflater = requireActivity().layoutInflater
@@ -23,6 +24,8 @@ class ProgramFileDialogFragment(val sourceCode: String): DialogFragment() {
                         val fileName = getDialog()?.window?.findViewById<EditText>(R.id.file_name_edittext)?.text
                         if(fileName != null)
                             programFileManager.saveProgramFile(fileName.toString(), sourceCode)
+
+                        // Обновляем титул в toolbar. Костыльно, но работает
                         activity?.findViewById<androidx.appcompat.widget.Toolbar>(R.id.editor_toolbar)?.title = fileName.toString()
                     })
                 .setNegativeButton(R.string.dialog_negative,

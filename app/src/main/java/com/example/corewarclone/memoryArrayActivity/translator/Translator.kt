@@ -24,8 +24,10 @@ class Translator {
     }
 
     fun showBytes(fileName: String) : ByteArray? {
-        parser.parseAll(programFileManager.readProgramFile(fileName))
-            ?: return parser.parsedInstructions
-        return null
+        val parsed = parser.parseAll(programFileManager.readProgramFile(fileName))
+        if(parsed != null)
+            return null
+        return parser.parsedInstructions
+
     }
 }

@@ -24,7 +24,6 @@ class ProgramFileAdapter(private val programFiles: Array<ProgramFile>?, val onCl
         private fun Double.format(digits: Int) = "%.${digits}f".format(this)
 
         fun bind(pf: ProgramFile) {
-            // TODO Отформатировать строки с датой и размером
             this.pf = pf
             fileNameTextView.text = pf.name
             val lastEdit = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(pf.last_edit)

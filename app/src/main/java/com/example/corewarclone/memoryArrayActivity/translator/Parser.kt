@@ -84,6 +84,8 @@ class Parser {
                 val label = separated[0].trim()
                 if(label.isBlank())
                     return Error(line = -1, description = "ERROR_NO_LABEL")
+                if(parsedLabels.keys.contains<String>(label))
+                    return Error(line = -1, description = "ERROR_LABEL_DUPLICATION")
                 parsedLabels[label] = instructionCount
             }
             instructionCount++
@@ -203,7 +205,9 @@ class Parser {
 
     fun parseAll(fileText: String) : Error? {
 
-        preprocessLabels(fileText)
+        val labelsResult = preprocessLabels(fileText)
+        if(labelsResult != null)
+            return labelsResult
 
         val instructions = fileText.split("\n")
         var line = 0

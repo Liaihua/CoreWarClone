@@ -16,10 +16,10 @@ const val ACTION_CHOOSE_REDCODE_FILE = 0xbeef
 
 class EditorActivity : AppCompatActivity() {
     private val programFileManager = ProgramFileManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
-        //setSupportActionBar(findViewById(R.id.editor_toolbar))
 
         selectToolbarTitle()
         val textProcessor = findViewById<TextProcessor>(R.id.text_processor)
@@ -95,7 +95,11 @@ class EditorActivity : AppCompatActivity() {
             R.id.run_menu_item -> {
                 // Вызов MemoryArrayActivity
                 // Но перед этим нужно сделать вызов Intent.ACTION_OPEN_DOCUMENT, чтобы выбрать вторую программу для компиляции
-                val secondFileIntent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                // А перед этим нужно сделать проверку обоих файлов на наличие ошибок
+                val secondFileIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    type = "*.red"
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                }
                 startActivityForResult(secondFileIntent, ACTION_CHOOSE_REDCODE_FILE)
                 return true
             }
@@ -108,7 +112,6 @@ class EditorActivity : AppCompatActivity() {
 
             R.id.save_as_menu_item -> {
                 val dialogFragment = ProgramFileDialogFragment(sourceCode)
-                // после вызова dialogFragment.show программа продолжает и дальше жить своей жизнью.
                 dialogFragment.show(supportFragmentManager, "save_file")
                 selectToolbarTitle()
                 return true
@@ -118,10 +121,9 @@ class EditorActivity : AppCompatActivity() {
                 saveFile(sourceCode)
                 val fileName = intent.data
                 val translator = Translator()
-                val assembled_program = translator.showBytes(fileName.toString())
-                if(assembled_program != null) {
-                    val dialogFragment = AssembledProgramDialogFragment(assembled_program)
-                    dialogFragment.prettyFormatByteArray(assembled_program)
+                val assembledProgram = translator.showBytes(fileName.toString())
+                if(assembledProgram != null) {
+                    val dialogFragment = AssembledProgramDialogFragment(assembledProgram)
                     dialogFragment.show(supportFragmentManager, "assembled_file")
                 }
                 return true
