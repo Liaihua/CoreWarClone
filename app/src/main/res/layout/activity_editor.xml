@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".editorActivity.EditorActivity">
     <!--
-        TODO Добавить кнопку с настройками (чего?)
-        Заменить титул на имя редактируемого файла
+        TODO Заменить титул на имя редактируемого файла
         https://habr.com/ru/post/509300/
     -->
     <com.google.android.material.appbar.AppBarLayout

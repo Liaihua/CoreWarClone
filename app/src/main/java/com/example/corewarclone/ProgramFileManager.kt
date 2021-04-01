@@ -151,6 +151,8 @@ object ProgramFileManager {
             }
         }
 
+        programFiles.sortBy { it.name }
+
         return programFiles
     }
 

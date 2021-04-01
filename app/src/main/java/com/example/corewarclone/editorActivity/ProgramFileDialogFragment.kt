@@ -27,6 +27,7 @@ class ProgramFileDialogFragment(val sourceCode: String): DialogFragment() {
                     DialogInterface.OnClickListener { dialog, id ->
                         getDialog()?.cancel()
                     })
+                .setCancelable(false)
             builder.create()
         }
     }

@@ -27,7 +27,7 @@ class ProgramFileAdapter(private val programFiles: Array<ProgramFile>?, val onCl
             // TODO Отформатировать строки с датой и размером
             this.pf = pf
             fileNameTextView.text = pf.name
-            val lastEdit = java.text.SimpleDateFormat("dd.MM.yyyy hh:mm").format(pf.last_edit)
+            val lastEdit = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(pf.last_edit)
             fileLastEditTextView.text = lastEdit
             val fileSize = pf.size / 1024.0
             fileSizeTextView.text = "${fileSize.format(2)}" + " KB"

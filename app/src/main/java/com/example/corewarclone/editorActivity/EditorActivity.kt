@@ -1,6 +1,7 @@
 package com.example.corewarclone.editorActivity
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableStringBuilder
@@ -18,7 +19,7 @@ class EditorActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
-        setSupportActionBar(findViewById(R.id.editor_toolbar))
+        //setSupportActionBar(findViewById(R.id.editor_toolbar))
 
         selectToolbarTitle()
         val textProcessor = findViewById<TextProcessor>(R.id.text_processor)
@@ -39,8 +40,15 @@ class EditorActivity : AppCompatActivity() {
         }
         else
         {
-            toolbar.title = R.string.default_title.toString()
+            toolbar.title = resources.getString(R.string.default_title)
         }
+        intent.data = Uri.parse(toolbar.title as String)
+        setSupportActionBar(toolbar)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        selectToolbarTitle()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -100,6 +108,7 @@ class EditorActivity : AppCompatActivity() {
 
             R.id.save_as_menu_item -> {
                 val dialogFragment = ProgramFileDialogFragment(sourceCode)
+                // после вызова dialogFragment.show программа продолжает и дальше жить своей жизнью.
                 dialogFragment.show(supportFragmentManager, "save_file")
                 selectToolbarTitle()
                 return true
