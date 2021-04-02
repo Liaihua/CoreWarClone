@@ -15,4 +15,5 @@ class Task {
 }
 
 class Scheduler {
+    fun schedule() {}
 }

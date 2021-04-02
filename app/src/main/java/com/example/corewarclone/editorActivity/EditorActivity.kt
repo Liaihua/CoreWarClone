@@ -18,7 +18,6 @@ import com.example.corewarclone.memoryArrayActivity.translator.Translator
 const val ACTION_CHOOSE_REDCODE_FILE = 0xbeef
 
 class EditorActivity : AppCompatActivity() {
-    private var secondFilePath: String? = null
     private val programFileManager = ProgramFileManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,11 +75,18 @@ class EditorActivity : AppCompatActivity() {
                     dialog.show()
                     return
                 }
-                secondFilePath = dirString
+
+                val translator = Translator()
+                val secondFileResult = translator.translate(dirString)
+                if(secondFileResult != null)
+                {
+                    val errorDialog = ProgramFileErrorDialogFragment(dirString, secondFileResult)
+                    errorDialog.show(supportFragmentManager, "error_message")
+                    return
+                }
+                val intent = Intent(this, MemoryArrayActivity::class.java)
+                startActivity(intent)
             }
-        }
-        else {
-            secondFilePath = null
         }
     }
 
@@ -133,27 +139,12 @@ class EditorActivity : AppCompatActivity() {
                     return true
                 }
 
-                // TODO Выяснить, почему новая запущенная активность продолжает жить своей жизнью, и почему я не могу вовремя обновить secondFilePath
-
                 val secondFileIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     type = "*/*"
                     addCategory(Intent.CATEGORY_OPENABLE)
                 }
                 startActivityForResult(secondFileIntent, ACTION_CHOOSE_REDCODE_FILE)
 
-
-                if(secondFilePath != null)
-                {
-                    val secondFileResult = translator.translate(secondFilePath!!)
-                    if(secondFileResult != null)
-                    {
-                        val errorDialog = ProgramFileErrorDialogFragment(secondFilePath!!, secondFileResult)
-                        errorDialog.show(supportFragmentManager, "error_message")
-                        return true
-                    }
-                    val intent = Intent(this, MemoryArrayActivity::class.java)
-                    startActivity(intent)
-                }
                 // Поделаю пока ВМ
 
                 return true
