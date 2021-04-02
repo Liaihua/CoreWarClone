@@ -12,6 +12,7 @@ package com.example.corewarclone.mainActivity
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import android.provider.DocumentsContract.getDocumentId
 import android.provider.DocumentsContract.getTreeDocumentId
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
@@ -44,7 +45,6 @@ object ProgramFileManager {
 
         if (treeId != null) {
 
-            //Timber.d("TreeId -> %s", treeId);
             val paths = treeId.split(":").toTypedArray()
             val type = paths[0]
             val subPath = if (paths.size == 2) paths[1] else ""
@@ -85,6 +85,35 @@ object ProgramFileManager {
             }
         }
         return rootPath.toString()
+    }
+
+    fun getDocumentPathById(context: Context, pathUri: Uri) : String? {
+        if(pathUri.scheme == "file")
+            return pathUri.path.toString()
+        val documentId = getDocumentId(pathUri)
+
+        if(documentId != null) {
+            val paths = documentId.split(":").toTypedArray()
+            val type = paths[0]
+            val filePath = paths[1]
+            return if ("PRIMARY".toLowerCase(Locale.ROOT) == type) {
+                Environment.getExternalStorageDirectory().absolutePath + File.separator.toString() + filePath
+            } else if("raw".toLowerCase(Locale.ROOT) == type) {
+                documentId.substring(documentId.indexOf(File.separator))
+            }
+            else {
+                val path = StringBuilder()
+                val pathSegment = documentId.split(":").toTypedArray()
+                if (pathSegment.size == 1) {
+                    path.append(getRemovableStorageRootPath(context, paths[0]))
+                } else {
+                    val rootPath: String? = getRemovableStorageRootPath(context, paths[0])
+                    path.append(rootPath).append(File.separator).append(pathSegment[1])
+                }
+                path.toString()
+            }
+        }
+        return null
     }
 
     fun saveCurrentDirectory(dirPath: String) {
@@ -166,6 +195,11 @@ object ProgramFileManager {
     // Метод для чтения программы из файла
     fun readProgramFile(nameUri: String) : String {
         val programFile = File(currentDir, nameUri)
+        return programFile.readText(Charsets.UTF_8)
+    }
+
+    fun readProgramFileByAbsolutePath(nameUri: String): String {
+        val programFile = File(nameUri)
         return programFile.readText(Charsets.UTF_8)
     }
 

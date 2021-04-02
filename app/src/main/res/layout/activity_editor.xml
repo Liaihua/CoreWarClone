@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".editorActivity.EditorActivity">
     <!--
-        TODO Заменить титул на имя редактируемого файла
         https://habr.com/ru/post/509300/
     -->
     <com.google.android.material.appbar.AppBarLayout
@@ -40,9 +39,4 @@
         app:layout_constraintTop_toBottomOf="@+id/appbar"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <!--
-        TODO Сделать диалоговое окно/скрываемый фрагмент, позволяющий:
-        - Посмотреть bin-версию проги
-        - Посмотреть сообщения об ошибках
-    -->
 </androidx.constraintlayout.widget.ConstraintLayout>

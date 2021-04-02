@@ -70,7 +70,6 @@ class Parser {
     }
 
     // Просматривает файл на наличие меток
-    // TODO Переделать работу с
     private fun preprocessLabels(fileText: String) : Error? {
         val instructions = fileText.split("\n")
         var lineCount = 0
