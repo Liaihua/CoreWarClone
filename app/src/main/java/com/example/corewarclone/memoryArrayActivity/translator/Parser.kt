@@ -49,8 +49,6 @@ class Parser {
 
     var parsedInstructions = ByteArray(0)
 
-    private fun getCharAt(string: String, index: Int) : Char = string[index]
-
     fun convertInt16ToByteArray(value: Short) : ByteArray {
         val array = ByteArray(2)
         array[1] = (value.toInt() and 0xFFFF).toByte()
@@ -67,33 +65,44 @@ class Parser {
         return array
     }
     // Передает строку без комментария
-    fun preprocessComments(instructionText: String) : String {
+    private fun preprocessComments(instructionText: String) : String {
         return instructionText.split(commentSeparator)[0]
     }
 
     // Просматривает файл на наличие меток
-    fun preprocessLabels(fileText: String) : Error? {
-        val instructions = fileText.split("\n").filter { it.isNotBlank() }
+    // TODO Переделать работу с
+    private fun preprocessLabels(fileText: String) : Error? {
+        val instructions = fileText.split("\n")
+        var lineCount = 0
         var instructionCount = 0
-        while(instructionCount <= instructions.lastIndex)
-        {
+        while(lineCount <= instructions.lastIndex) {
+            if(instructions[lineCount].isBlank()) {
+                lineCount++
+                continue
+            }
             val instruction = instructions[instructionCount].trim()
             val separated = instruction.split(labelSeparator)
             if(separated.count() == 2)
             {
                 val label = separated[0].trim()
                 if(label.isBlank())
-                    return Error(line = -1, description = "ERROR_NO_LABEL")
+                    return Error(line = lineCount + 1, description = "ERROR_NO_LABEL")
                 if(parsedLabels.keys.contains<String>(label))
-                    return Error(line = -1, description = "ERROR_LABEL_DUPLICATION")
+                    return Error(line = lineCount + 1, description = "ERROR_LABEL_DUPLICATION")
                 parsedLabels[label] = instructionCount
             }
+            else
+            {
+                if(separated.count() > 2)
+                    return Error(line = lineCount + 1, description = "ERROR_WRONG_LABEL_AMOUNT")
+            }
+            lineCount++
             instructionCount++
         }
         return null
     }
 
-    fun parseInstruction(line: String, instructionCount: Int) : Error? {
+    private fun parseInstruction(line: String, instructionCount: Int) : Error? {
         if(line.isBlank())
             return null
 
@@ -110,8 +119,8 @@ class Parser {
         return null
     }
 
-    fun parseOperands(operands: String, instructionCount: Int) : Error? {
-        val parsedOperands = operands.replace(" ", "").split(operandSeparator)
+    private fun parseOperands(operands: String, instructionCount: Int) : Error? {
+        val parsedOperands = operands.replace(" ", "").split(operandSeparator).filter { it.isNotBlank() }
 
         if(parsedOperands.count() != 2) // Разделитель отсутствует
             return Error (line = -1, description = "ERROR_NO_SEPARATOR")
@@ -194,7 +203,7 @@ class Parser {
         return null
     }
 
-    fun parseOpcode(opcode: String) : Error? {
+    private fun parseOpcode(opcode: String) : Error? {
         val loweredOpcode = opcode.toLowerCase(Locale.ROOT)
         val opcodeResult = opcodes.indexOf(loweredOpcode)
         if(opcodeResult == -1)

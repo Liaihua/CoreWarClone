@@ -7,6 +7,7 @@ class Translator {
     private val programFileManager = ProgramFileManager
     private val parser: Parser = Parser()
     // Преобразует .red файл в .rbin
+    // TODO Сделать трансляцию в локальную директорию приложения
     fun translate(fileName: String) : Error? {
         val result = parser.parseAll(programFileManager.readProgramFile(fileName))
         if(result == null)

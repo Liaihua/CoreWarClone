@@ -32,6 +32,7 @@ data class ProgramFile(val name: String, val last_edit: Long, val size: Long);
 object ProgramFileManager {
 
     // Переменная для хранения папки с файлом, где хранится имя используемой приложением папки для прог
+    // Думаю, что было бы неплохо использовать ее в качестве хранилища .rbin файлов
     var contextDir: File? = null
     // Переменная для хранения используемой приложением папки для прог
     var currentDir: String? = null
@@ -169,12 +170,12 @@ object ProgramFileManager {
     }
 
     fun readBinaryFile(nameUri: String) : ByteArray {
-        val binaryFile = File(currentDir, nameUri)
+        val binaryFile = File(contextDir, nameUri)
         return binaryFile.readBytes()
     }
 
     fun writeBinaryFile(nameUri: String, content: ByteArray) {
-        val binaryFile = File(currentDir, nameUri)
+        val binaryFile = File(contextDir, nameUri)
         binaryFile.writeBytes(content)
     }
 

@@ -8,6 +8,7 @@ import android.text.SpannableStringBuilder
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.DialogFragment
 import com.example.corewarclone.R
 import com.example.corewarclone.mainActivity.ProgramFileManager
 import com.example.corewarclone.memoryArrayActivity.translator.Translator
@@ -86,7 +87,14 @@ class EditorActivity : AppCompatActivity() {
         }
         else
         {
-            programFileManager.saveProgramFile(fileName.toString(), sourceCode)
+            val toolbar = findViewById<Toolbar>(R.id.editor_toolbar)
+            //if(toolbar.title != resources.getString(R.string.default_title))
+            //{
+              //  programFileManager.saveProgramFile(toolbar.title.toString(), sourceCode)
+            //}
+            //else {
+                programFileManager.saveProgramFile(fileName.toString(), sourceCode)
+            //}
         }
     }
 
@@ -95,16 +103,35 @@ class EditorActivity : AppCompatActivity() {
         if(sourceCode.isBlank())
             return true
 
+        // TODO Выяснить, почему при сохранении нового файла на основе старого перезаписывается старый
         when (item.itemId) {
             R.id.run_menu_item -> {
-                // Вызов MemoryArrayActivity
-                // Но перед этим нужно сделать вызов Intent.ACTION_OPEN_DOCUMENT, чтобы выбрать вторую программу для компиляции
-                // А перед этим нужно сделать проверку обоих файлов на наличие ошибок
-                val secondFileIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                    type = "*/*"
-                    addCategory(Intent.CATEGORY_OPENABLE)
+                // Попробуй сохранять .rbin файлы в локальную папку (как current_dir.txt).
+                // Тогда не придется мучиться с URI
+
+                // Еще раз, каков порядок работы приложения:
+                // 1. Проверка первого файла на наличие ошибок. Если они есть, выводим диалоговое окно с описанием ошибки
+                // 2. Запуск Intent.ACTION_OPEN_DOCUMENT. Если выбранный файл не содержит расширения .red,
+                // выводим диалоговое окно, чтобы предупредить о невалидном расширении
+                // 3. Компиляция второго файла. Если второй файл не скомпилирован, выводим диалоговое окно
+                // с описанием ошибки (желательно пометить, что проблема именно со вторым файлом, чтобы не спутать
+                // 4. Запуск MemoryArrayActivity
+
+                val fileName = intent.data
+                val translator = Translator()
+                val firstFileResult = translator.translate(fileName.toString())
+                if(firstFileResult != null)
+                {
+                    val errorDialog = ProgramFileErrorDialogFragment(fileName.toString(), firstFileResult)
+                    errorDialog.show(supportFragmentManager, "error_message")
+                    return true
                 }
-                startActivityForResult(secondFileIntent, ACTION_CHOOSE_REDCODE_FILE)
+
+                //val secondFileIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                //    type = "*/*"
+                //    addCategory(Intent.CATEGORY_OPENABLE)
+                //}
+                //startActivityForResult(secondFileIntent, ACTION_CHOOSE_REDCODE_FILE)
                 return true
             }
 
