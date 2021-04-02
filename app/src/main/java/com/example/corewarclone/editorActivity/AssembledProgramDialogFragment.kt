@@ -11,7 +11,6 @@ import com.example.corewarclone.memoryArrayActivity.translator.INSTRUCTION_BYTES
 import kotlinx.android.synthetic.main.assembled_program_dialog.*
 import java.util.*
 
-// TODO Сделать отображение "скомпилированного" кода
 class AssembledProgramDialogFragment(private val assembled_program: ByteArray) : DialogFragment(){
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         retainInstance = true

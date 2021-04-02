@@ -3,6 +3,7 @@ package com.example.corewarclone.editorActivity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
+import android.net.Uri
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toolbar
@@ -27,6 +28,7 @@ class ProgramFileDialogFragment(val sourceCode: String): DialogFragment() {
 
                         // Обновляем титул в toolbar. Костыльно, но работает
                         activity?.findViewById<androidx.appcompat.widget.Toolbar>(R.id.editor_toolbar)?.title = fileName.toString()
+                        it?.intent?.data = Uri.parse(fileName.toString())
                     })
                 .setNegativeButton(R.string.dialog_negative,
                     DialogInterface.OnClickListener { dialog, id ->

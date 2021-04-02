@@ -4,33 +4,37 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.DocumentsContract.getDocumentId
 import android.text.SpannableStringBuilder
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import com.example.corewarclone.R
 import com.example.corewarclone.mainActivity.ProgramFileManager
+import com.example.corewarclone.memoryArrayActivity.MemoryArrayActivity
 import com.example.corewarclone.memoryArrayActivity.translator.Translator
 
 const val ACTION_CHOOSE_REDCODE_FILE = 0xbeef
 
 class EditorActivity : AppCompatActivity() {
+    private var secondFilePath: String? = null
     private val programFileManager = ProgramFileManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editor)
 
-        selectToolbarTitle()
         val textProcessor = findViewById<TextProcessor>(R.id.text_processor)
         if(intent.dataString != null) {
             textProcessor.text = SpannableStringBuilder(
                 programFileManager.readProgramFile(intent.dataString!!))
         }
+
+        selectToolbarTitle()
     }
 
     private fun selectToolbarTitle() {
-        // TODO Выбрать титул в зависимости от наличия/отсутствия файла
         val toolbar = findViewById<Toolbar>(R.id.editor_toolbar)
         val fileName = intent.dataString
 
@@ -59,21 +63,24 @@ class EditorActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        // TODO Сделать вызов MemoryArrayActivity, если второй файл валиден
         if(requestCode == ACTION_CHOOSE_REDCODE_FILE && resultCode == RESULT_OK) {
-            // TODO Сделать/найти другой метод для получения имени файла из Uri
-            val dirString = programFileManager.getDirectoryPathFromUri(this, data?.data!!)
+            val dirString = programFileManager.getDocumentPathById(this, data?.data!!)
 
             if(dirString != null)
             {
-                if(dirString.endsWith(".red"))
+                if(!dirString.endsWith(".red"))
                 {
-                    // Выполнение трансляции второй программы и последующий вызов MemoryArrayActivity/Диалогового окна с ошибкой
-                    // Может, лучше часть этого оставить за пределами этого метода?
-                    val translator = Translator()
-                    translator.translate(dirString)
+                    val dialog = AlertDialog.Builder(this)
+                    dialog.setMessage("File extension is not \".red\"")
+                        .setPositiveButton("OK") { _, _ -> }
+                    dialog.show()
+                    return
                 }
+                secondFilePath = dirString
             }
+        }
+        else {
+            secondFilePath = null
         }
     }
 
@@ -97,14 +104,58 @@ class EditorActivity : AppCompatActivity() {
 
         when (item.itemId) {
             R.id.run_menu_item -> {
-                // Вызов MemoryArrayActivity
-                // Но перед этим нужно сделать вызов Intent.ACTION_OPEN_DOCUMENT, чтобы выбрать вторую программу для компиляции
-                // А перед этим нужно сделать проверку обоих файлов на наличие ошибок
+                // Попробуй сохранять .rbin файлы в локальную папку (как current_dir.txt).
+                // Тогда не придется мучиться с URI
+
+                // Еще раз, каков порядок работы приложения:
+                // 1. Проверка первого файла на наличие ошибок. Если они есть, выводим диалоговое окно с описанием ошибки
+                // 2. Запуск Intent.ACTION_OPEN_DOCUMENT. Если выбранный файл не содержит расширения .red,
+                // выводим диалоговое окно, чтобы предупредить о невалидном расширении
+                // 3. Компиляция второго файла. Если второй файл не скомпилирован, выводим диалоговое окно
+                // с описанием ошибки (желательно пометить, что проблема именно со вторым файлом, чтобы не спутать файлы
+                // 4. Запуск MemoryArrayActivity
+
+                val firstFileName = intent.data
+                if(!programFileManager.isExists(firstFileName.toString()))
+                {
+                    val notSavedDialog = AlertDialog.Builder(this)
+                    notSavedDialog.setMessage("File is not saved")
+                        .setPositiveButton("OK") { _, _ -> }
+                    notSavedDialog.show()
+                    return true
+                }
+                val translator = Translator()
+                val firstFileResult = translator.translate(firstFileName.toString())
+                if(firstFileResult != null)
+                {
+                    val errorDialog = ProgramFileErrorDialogFragment(firstFileName.toString(), firstFileResult)
+                    errorDialog.show(supportFragmentManager, "error_message")
+                    return true
+                }
+
+                // TODO Выяснить, почему новая запущенная активность продолжает жить своей жизнью, и почему я не могу вовремя обновить secondFilePath
+
                 val secondFileIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     type = "*/*"
                     addCategory(Intent.CATEGORY_OPENABLE)
                 }
                 startActivityForResult(secondFileIntent, ACTION_CHOOSE_REDCODE_FILE)
+
+
+                if(secondFilePath != null)
+                {
+                    val secondFileResult = translator.translate(secondFilePath!!)
+                    if(secondFileResult != null)
+                    {
+                        val errorDialog = ProgramFileErrorDialogFragment(secondFilePath!!, secondFileResult)
+                        errorDialog.show(supportFragmentManager, "error_message")
+                        return true
+                    }
+                    val intent = Intent(this, MemoryArrayActivity::class.java)
+                    startActivity(intent)
+                }
+                // Поделаю пока ВМ
+
                 return true
             }
 
@@ -122,10 +173,8 @@ class EditorActivity : AppCompatActivity() {
             }
 
             R.id.binary_menu_item -> {
-                saveFile(sourceCode)
-                val fileName = intent.data
                 val translator = Translator()
-                val assembledProgram = translator.showBytes(fileName.toString())
+                val assembledProgram = translator.showBytes(sourceCode)
                 if(assembledProgram != null) {
                     val dialogFragment = AssembledProgramDialogFragment(assembledProgram)
                     dialogFragment.show(supportFragmentManager, "assembled_file")
@@ -139,7 +188,7 @@ class EditorActivity : AppCompatActivity() {
                 return true
             }
 
-            else ->{
+            else -> {
                 super.onOptionsItemSelected(item)
                 return true
             }
