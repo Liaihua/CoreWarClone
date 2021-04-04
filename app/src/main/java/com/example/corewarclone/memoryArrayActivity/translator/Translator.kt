@@ -1,5 +1,5 @@
 package com.example.corewarclone.memoryArrayActivity.translator
-import com.example.corewarclone.mainActivity.ProgramFileManager
+import com.example.corewarclone.ProgramFileManager
 import java.io.File
 
 const val MAGIC_NUM = 0xbeda
@@ -17,7 +17,7 @@ class Translator {
             result = parser.parseAll(programFileManager.readProgramFile(fileName))
         } else {
             preprocessedFileName = fileName.split(File.separator).last()
-            result = parser.parseAll(programFileManager.readProgramFileByAbsolutePath(fileName))
+            result = parser.parseAll(programFileManager.readProgramFile(fileName))
         }
 
         if(result == null)

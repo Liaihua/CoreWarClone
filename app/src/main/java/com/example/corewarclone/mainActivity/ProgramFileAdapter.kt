@@ -1,13 +1,11 @@
 package com.example.corewarclone.mainActivity
 
-import android.icu.text.SimpleDateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SimpleAdapter
 import android.widget.TextView
-import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
+import com.example.corewarclone.ProgramFile
 import com.example.corewarclone.R
 
 class ProgramFileAdapter(private val programFiles: Array<ProgramFile>?, val onClick: (ProgramFile) -> Unit) : RecyclerView.Adapter<ProgramFileAdapter.ViewHolder>() {

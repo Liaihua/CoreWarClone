@@ -1,4 +1,4 @@
-package com.example.corewarclone.mainActivity
+package com.example.corewarclone
 
 // java.nio.file недоступен из-за того, что версия API, в которой он есть - 26 (Oreo)
 // Повезло повезло
@@ -14,12 +14,8 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.DocumentsContract.getDocumentId
 import android.provider.DocumentsContract.getTreeDocumentId
-import android.view.WindowManager
 import androidx.core.content.ContextCompat
-import kotlinx.coroutines.processNextEventInCurrentThread
 import java.io.*
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.util.*
 import kotlin.*
 
@@ -194,10 +190,15 @@ object ProgramFileManager {
 
     // Метод для чтения программы из файла
     fun readProgramFile(nameUri: String) : String {
-        val programFile = File(currentDir, nameUri)
-        return programFile.readText(Charsets.UTF_8)
+        return if (!File(nameUri).isAbsolute) {
+            val programFile = File(currentDir, nameUri)
+            programFile.readText(Charsets.UTF_8)
+        } else {
+            readProgramFileByAbsolutePath(nameUri)
+        }
     }
 
+    // Чтение программы в случае, если мы обращаемся к нему из другой папки
     fun readProgramFileByAbsolutePath(nameUri: String): String {
         val programFile = File(nameUri)
         return programFile.readText(Charsets.UTF_8)

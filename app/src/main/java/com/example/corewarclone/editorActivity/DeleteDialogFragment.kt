@@ -6,7 +6,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.example.corewarclone.R
-import com.example.corewarclone.mainActivity.ProgramFileManager
+import com.example.corewarclone.ProgramFileManager
 
 class DeleteDialogFragment(val programFilePath: String) : DialogFragment(){
     private val programFileManager = ProgramFileManager

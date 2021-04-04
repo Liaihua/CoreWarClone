@@ -4,14 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.DocumentsContract.getDocumentId
 import android.text.SpannableStringBuilder
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import com.example.corewarclone.R
-import com.example.corewarclone.mainActivity.ProgramFileManager
+import com.example.corewarclone.ProgramFileManager
 import com.example.corewarclone.memoryArrayActivity.MemoryArrayActivity
 import com.example.corewarclone.memoryArrayActivity.translator.Translator
 

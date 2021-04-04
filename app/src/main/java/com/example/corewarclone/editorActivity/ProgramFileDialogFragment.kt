@@ -6,10 +6,9 @@ import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
 import android.widget.EditText
-import android.widget.Toolbar
 import androidx.fragment.app.DialogFragment
 import com.example.corewarclone.R
-import com.example.corewarclone.mainActivity.ProgramFileManager
+import com.example.corewarclone.ProgramFileManager
 
 class ProgramFileDialogFragment(val sourceCode: String): DialogFragment() {
     private val programFileManager = ProgramFileManager
