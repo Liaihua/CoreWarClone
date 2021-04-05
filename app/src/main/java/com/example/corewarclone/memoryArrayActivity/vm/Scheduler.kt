@@ -5,8 +5,9 @@ import java.util.*
 // TODO Догадайся
 
 class Warrior {
-    val name: String = ""
-    var taskQueue: Queue<Task> = TODO()
+    var id: Int = 0
+    var name: String = ""
+    var taskQueue: ArrayDeque<Task> = ArrayDeque()
 
 }
 

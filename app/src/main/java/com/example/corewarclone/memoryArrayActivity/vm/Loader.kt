@@ -8,6 +8,7 @@ const val MEMORY_ARRAY_SIZE = 8000
 
 class Loader {
     private val programFileManager = ProgramFileManager
+    var loadedWarriors = arrayOf<Warrior>()
 
     private fun checkMagicNum(magicNumByteArray: ByteArray) : Boolean {
         val magicNum = (magicNumByteArray[0].toInt() shl 8) or magicNumByteArray[1].toInt()
@@ -18,7 +19,7 @@ class Loader {
 
     // Kotlin все еще не умеет в работу с шортами
     private fun getShort(bytes: ByteArray) : Int {
-        return (bytes[0].toInt() shl 8) or bytes[1].toInt()
+        return ((bytes[0].toInt() and 0xFF) shl 8) or (bytes[1].toInt() and 0xFF)
     }
 
     private fun getInt(bytes: ByteArray) : Int {
@@ -55,14 +56,20 @@ class Loader {
             loadedProgram += instruction
             instructionIndex += INSTRUCTION_BYTES_COUNT
         }
+
         return loadedProgram
     }
 
     fun initializeMemoryArray(filePaths: List<String>) : Array<Instruction> {
         var memoryArray = Array<Instruction>(MEMORY_ARRAY_SIZE) { Instruction(opcode = 0, operandA = 0, operandB = 0) }
+        var warriorCount = 0
         for(filePath in filePaths) {
             val programBinary = programFileManager.readBinaryFile(filePath)
             loadProgramFile(programBinary)
+            var warrior = Warrior()
+            warrior.name = filePath.split(".").first()
+            warrior.id = warriorCount++
+            loadedWarriors += warrior
         }
         return arrayOf()
     }
