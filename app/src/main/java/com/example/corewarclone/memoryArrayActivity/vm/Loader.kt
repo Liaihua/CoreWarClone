@@ -6,6 +6,8 @@ import java.io.File
 
 const val MEMORY_ARRAY_SIZE = 8000
 
+var MemoryArray = arrayOf<Instruction>()
+
 class Loader {
     private val programFileManager = ProgramFileManager
     var loadedWarriors = arrayOf<Warrior>()
