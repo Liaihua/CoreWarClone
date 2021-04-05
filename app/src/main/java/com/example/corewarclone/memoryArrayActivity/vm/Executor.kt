@@ -42,5 +42,6 @@ class Executor {
             // SPL
             9.toByte() -> {}
         }
+        return null
     }
 }

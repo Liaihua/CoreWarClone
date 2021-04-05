@@ -2,13 +2,32 @@ package com.example.corewarclone.memoryArrayActivity.vm
 
 import com.example.corewarclone.ProgramFileManager
 import com.example.corewarclone.memoryArrayActivity.translator.INSTRUCTION_BYTES_COUNT
-import java.io.File
+import java.util.*
+import kotlin.random.Random
 
 const val MEMORY_ARRAY_SIZE = 8000
+
+// Метод для вычисления индекса массива в случаях, когда индекс больше размера массива
+// (реализация массива-кольца)
+fun calculateRound(arraySize: Int, index: Int) : Int {
+    var currentIndex = index
+    while(kotlin.math.abs(currentIndex) >= arraySize)
+    {
+        if(currentIndex >= 0)
+            currentIndex -= arraySize
+        else
+            currentIndex += arraySize
+    }
+    return if(currentIndex >= 0)
+        currentIndex
+    else
+        arraySize + currentIndex
+}
 
 class Loader {
     private val programFileManager = ProgramFileManager
     var loadedWarriors = arrayOf<Warrior>()
+    var loadedWarriorsBounds = arrayOf<Pair<Int, Int>>()
 
     private fun checkMagicNum(magicNumByteArray: ByteArray) : Boolean {
         val magicNum = (magicNumByteArray[0].toInt() shl 8) or magicNumByteArray[1].toInt()
@@ -63,14 +82,47 @@ class Loader {
     fun initializeMemoryArray(filePaths: List<String>) : Array<Instruction> {
         var memoryArray = Array<Instruction>(MEMORY_ARRAY_SIZE) { Instruction(opcode = 0, operandA = 0, operandB = 0) }
         var warriorCount = 0
+        val rand = Random
         for(filePath in filePaths) {
+
+            // 1. Читаем бинарный код программы
+            // 2. Выбираем случайную точку в массиве (сверяясь с записями границ других программ) и сохраняем точки записи программы в массиве
+            // 3. Записываем бин
+            // 4. Создаем Warrior'а и присваиваем ему Task с InstructionPointer на выбранную точку
+
             val programBinary = programFileManager.readBinaryFile(filePath)
-            loadProgramFile(programBinary)
-            var warrior = Warrior()
+            val loadedProgram = loadProgramFile(programBinary) ?: return arrayOf()
+
+            var startIndex = rand.nextInt(MEMORY_ARRAY_SIZE)
+            var currentIndex = startIndex
+
+            while(true) {
+                if((loadedWarriorsBounds.filter { startEnd ->
+                        (startIndex >= startEnd.first && startIndex <= startEnd.second) ||
+                        (loadedProgram.count() - 1 <= startEnd.second && loadedProgram.count() - 1 >= startEnd.first)
+                    }).isNotEmpty())
+                        startIndex = rand.nextInt(MEMORY_ARRAY_SIZE)
+                else {
+                    loadedWarriorsBounds += Pair(startIndex, loadedProgram.count() - 1)
+                    break
+                }
+            }
+
+            for(instruction in loadedProgram) {
+                memoryArray[calculateRound(MEMORY_ARRAY_SIZE, currentIndex)] = instruction
+                currentIndex++
+            }
+
+            val warrior = Warrior()
             warrior.name = filePath.split(".").first()
             warrior.id = warriorCount++
+            val task = Task()
+            task.instructionPointer = startIndex
+            warrior.taskQueue = ArrayDeque()
+            warrior.taskQueue.add(task)
             loadedWarriors += warrior
         }
-        return arrayOf()
+        loadedWarriors.toMutableList().shuffle()
+        return memoryArray
     }
 }
