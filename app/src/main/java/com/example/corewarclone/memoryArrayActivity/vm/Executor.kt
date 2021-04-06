@@ -1,12 +1,14 @@
 package com.example.corewarclone.memoryArrayActivity.vm
 
+import java.util.ArrayDeque
+
 class Executor {
     // Выполнение инструкции. Метод возвращает число, на которое увеличить Instruction Pointer
     // Если возвращается null, то выполняемый Task завершается
 
     // #, $, @, <
 
-    fun execute(instruction: Instruction) : Int? {
+    fun execute(tasks: ArrayDeque<Task>, instruction: Instruction) : Int? {
         when(instruction.opcode) {
             // DAT
             0.toByte() -> {

@@ -12,6 +12,7 @@ class Warrior {
 }
 
 class Task {
+    var id: Int = 0
     var instructionPointer: Int = -1
 }
 
