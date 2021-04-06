@@ -7,6 +7,8 @@ import kotlin.random.Random
 
 const val MEMORY_ARRAY_SIZE = 8000
 
+var MemoryArray = arrayOf<Instruction>()
+
 // Метод для вычисления индекса массива в случаях, когда индекс больше размера массива
 // (реализация массива-кольца)
 fun calculateRound(arraySize: Int, index: Int) : Int {

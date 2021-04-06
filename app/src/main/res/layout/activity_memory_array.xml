@@ -50,7 +50,8 @@
             app:layout_constraintTop_toBottomOf="@id/step_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:src="@drawable/ic_baseline_stop_24"/>
+            android:src="@drawable/ic_baseline_stop_24"
+            android:onClick="stopExecution"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
