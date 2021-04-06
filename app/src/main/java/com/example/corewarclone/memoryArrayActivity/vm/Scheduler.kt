@@ -4,6 +4,11 @@ import java.util.*
 
 // TODO Догадайся
 
+const val CYCLES_UNTIL_TIE = 100000
+const val MAX_TASKS = 64
+
+var Warriors = arrayOf<Warrior>()
+
 class Warrior {
     var id: Int = 0
     var name: String = ""
@@ -12,7 +17,7 @@ class Warrior {
 }
 
 class Task {
-    var instructionPointer: Int = -1
+    var instructionPointer: Int = 0
 }
 
 class Scheduler {
