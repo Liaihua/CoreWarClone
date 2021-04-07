@@ -4,9 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.example.corewarclone.R
-import com.example.corewarclone.memoryArrayActivity.vm.Loader
+import com.example.corewarclone.memoryArrayActivity.vm.*
 
-// Я не знаю, как мне сделать эту активность: на Kotlin, или на C++?
 // TODO Выясни, как пользоваться SurfaceView
 class MemoryArrayActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,9 +14,26 @@ class MemoryArrayActivity : AppCompatActivity() {
 
         // Проверка загрузчика на правильность работы
         val loader = Loader()
-        loader.initializeMemoryArray(listOf("test.rbin"))
+        val exec = Executor()
+        MemoryArray = loader.initializeMemoryArray(listOf("imp.rbin"))
 
-
+        // Проверка исполнителя на правильность работы. Данный код будет перенесен в Scheduler
+        var cycles = 0
+        while (cycles < CYCLES_UNTIL_TIE) {
+            val warrior = Warriors.first()
+            val offset = exec.execute(warrior, warrior.taskQueue.first, MemoryArray[warrior.taskQueue.first.instructionPointer])
+            if(offset != null)
+            {
+                val IP = warrior.taskQueue.first.instructionPointer
+                warrior.taskQueue.first.instructionPointer = calculateRound(MEMORY_ARRAY_SIZE, IP + offset)
+            }
+            else
+            {
+                warrior.taskQueue.remove(warrior.taskQueue.remove())
+                break
+            }
+            cycles++
+        }
     }
 
     fun stopExecution(view: View) {

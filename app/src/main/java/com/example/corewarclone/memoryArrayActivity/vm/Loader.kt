@@ -105,7 +105,7 @@ class Loader {
                     }).isNotEmpty())
                         startIndex = rand.nextInt(MEMORY_ARRAY_SIZE)
                 else {
-                    loadedWarriorsBounds += Pair(startIndex, loadedProgram.count() - 1)
+                    loadedWarriorsBounds += Pair(startIndex, startIndex + loadedProgram.count())
                     break
                 }
             }
@@ -124,7 +124,8 @@ class Loader {
             warrior.taskQueue.add(task)
             loadedWarriors += warrior
         }
-        loadedWarriors.toMutableList().shuffle()
+        Warriors = loadedWarriors
+        Warriors.toMutableList().shuffle()
         return memoryArray
     }
 }

@@ -9,12 +9,27 @@ class Executor {
     // @ - 2,
     // < - 3
 
+    // TODO Сделать проверку на наличие багов во время всяких присваиваний
+    // (А если более конкретно, то проверку на перезапись режимов адресации
+    // (хотя кто знает, что еще мне попадется))
+    // А может, стоит попробовать отладку на массиве меньших размеров?
+
     private fun getOperandValue(operand: Int) : Short {
         return (operand and 0xFFFF).toShort()
     }
 
     private fun getOperandAddressMode(operand: Int) : Int {
         return (operand shr 16) and 0xFF
+    }
+
+    // Метод не устанавливает значение указанного операнда, но возвращает значение,
+    // которое можно использовать для последующего присваивания
+    private fun setOperandValue(operand: Int, value: Short) : Int {
+       return (operand and 0xFFFF0000.toInt()) or value.toInt()
+    }
+
+    private fun setOperandAddressMode(operand: Int, value: Short) : Int {
+        return (operand and 0xFFFF) or (value.toInt() shl 16)
     }
 
     // Вычисляет значение относительного адреса
@@ -34,12 +49,14 @@ class Executor {
             }
             // @
             2 -> {
-                operandAAddress = getOperandValue(
-                    MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, position)].operandA)
+                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, position)]
+                operandAAddress = getOperandValue(indirectInstruction.operandA)
             }
             // <
             3 -> {
-
+                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, position)]
+                indirectInstruction.operandA--
+                operandAAddress = getOperandValue(indirectInstruction.operandA)
             }
             else -> return null
 
@@ -48,19 +65,23 @@ class Executor {
         when(getOperandAddressMode(instruction.operandB)) {
 
             // #
-            0 -> {}
+            0 -> {
+
+            }
             // $
             1 -> {
                 operandBAddress = getOperandValue(instruction.operandB)
             }
             // @
             2 -> {
-                operandBAddress = getOperandValue(
-                    MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, position)].operandB)
+                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, position)]
+                operandBAddress = getOperandValue(indirectInstruction.operandB)
             }
             // <
             3 -> {
-
+                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, position)]
+                indirectInstruction.operandB--
+                operandBAddress = getOperandValue(indirectInstruction.operandB)
             }
             else -> return null
         }
@@ -97,36 +118,55 @@ class Executor {
                     return null
                 }
                 else {
-
+                    // Если A установлен в '#',
+                    if(operandsModes.first == 0) {
+                        MemoryArray[calculateRound(
+                            MEMORY_ARRAY_SIZE,
+                            task.instructionPointer + operandsAddresses.second
+                        )]
+                            .operandA = instruction.operandA
+                    }
+                    // Если A установлен в другие режимы
+                    else {
+                        MemoryArray[calculateRound(
+                            MEMORY_ARRAY_SIZE,
+                            task.instructionPointer + operandsAddresses.second
+                        )] = instruction
+                    }
+                    return 1
                 }
             }
 
             // ADD
             2.toByte() -> {
                 // Так как B является ссылкой на операнд назначения, нам нужен любой режим адресации, кроме явного
-                if(operandsModes.second != 0) {
-
+                return if(operandsModes.second != 0) {
+                    val processedInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
+                    processedInstruction.operandB += getOperandValue(MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA)
+                    1
                 }
                 else {
-                    return null
+                    null
                 }
             }
 
             // SUB
             3.toByte() -> {
                 // Читай комментарий к ADD
-                if(operandsModes.second != 0) {
-
+                return if(operandsModes.second != 0) {
+                    val instruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
+                    instruction.operandB -= getOperandValue(MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA)
+                    1
                 }
                 else {
-                    return null
+                    null
                 }
             }
 
             // JMP
             4.toByte() -> {
                 // Здесь мы просто возвращаем адрес текущей инструкции + адрес, взятый из операнда A
-                return calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.first)
+                return operandsAddresses.first.toInt()
             }
 
             // JMZ
@@ -135,9 +175,9 @@ class Executor {
                 return if(getOperandValue(
                         MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
                             .operandB) == 0.toShort()) {
-                    calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.first)
+                    operandsAddresses.first.toInt()
                 } else {
-                    calculateRound(MEMORY_ARRAY_SIZE, ++task.instructionPointer)
+                    1
                 }
             }
 
@@ -147,16 +187,24 @@ class Executor {
                 return if(getOperandValue(
                         MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
                             .operandB) != 0.toShort()) {
-                    calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.first)
+                    operandsAddresses.first.toInt()
                 }
                 else {
-                    calculateRound(MEMORY_ARRAY_SIZE, ++task.instructionPointer)
+                    1
                 }
             }
 
             // DJN
             7.toByte() -> {
+                // 1. Мы уменьшаем значение из B
+                // 2. Затем делаем проверку на B != 0
+                if(--instruction.operandB != 0)
+                {
 
+                }
+                else {
+                    1
+                }
             }
 
             // CMP
@@ -173,7 +221,7 @@ class Executor {
                     newTask.instructionPointer = operandsAddresses.first.toInt()
                     warrior.taskQueue.add(newTask)
                 }
-                return ++task.instructionPointer
+                return 1
             }
         }
         return null
