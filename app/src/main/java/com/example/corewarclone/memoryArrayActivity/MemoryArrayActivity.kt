@@ -14,9 +14,13 @@ class MemoryArrayActivity : AppCompatActivity() {
 
         // Проверка загрузчика на правильность работы
         val loader = Loader()
-        val exec = Executor()
         MemoryArray = loader.initializeMemoryArray(listOf("imp.rbin"))
 
+    }
+
+    fun startExecution(view: View) {
+
+        val exec = Executor()
         // Проверка исполнителя на правильность работы. Данный код будет перенесен в Scheduler
         var cycles = 0
         while (cycles < CYCLES_UNTIL_TIE) {

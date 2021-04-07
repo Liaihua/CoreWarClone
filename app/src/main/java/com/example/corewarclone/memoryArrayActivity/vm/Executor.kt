@@ -154,8 +154,8 @@ class Executor {
             3.toByte() -> {
                 // Читай комментарий к ADD
                 return if(operandsModes.second != 0) {
-                    val instruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
-                    instruction.operandB -= getOperandValue(MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA)
+                    val processedInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
+                    processedInstruction.operandB -= getOperandValue(MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA)
                     1
                 }
                 else {

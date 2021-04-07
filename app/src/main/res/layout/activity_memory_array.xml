@@ -34,7 +34,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/step_button"
             app:layout_constraintRight_toRightOf="parent"
-            android:src="@drawable/ic_baseline_run_arrow_24"/>
+            android:src="@drawable/ic_baseline_run_arrow_24"
+            android:onClick="startExecution"/>
         <ImageButton
             android:id="@+id/step_button"
             android:layout_width="match_parent"
