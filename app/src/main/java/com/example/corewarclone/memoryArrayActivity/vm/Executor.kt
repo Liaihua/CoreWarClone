@@ -25,9 +25,10 @@ class Executor {
     // Метод не устанавливает значение указанного операнда, но возвращает значение,
     // которое можно использовать для последующего присваивания
     private fun setOperandValue(operand: Int, value: Short) : Int {
-       return (operand and 0xFFFF0000.toInt()) or value.toInt()
+        return (operand and 0xFFFF0000.toInt()) or (value.toInt() and 0x0000FFFF)
     }
 
+    // Вопрос: а разве адресация может меняться во время исполнения?
     private fun setOperandAddressMode(operand: Int, value: Short) : Int {
         return (operand and 0xFFFF) or (value.toInt() shl 16)
     }
@@ -49,13 +50,13 @@ class Executor {
             }
             // @
             2 -> {
-                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, position)]
-                operandAAddress = getOperandValue(indirectInstruction.operandA)
+                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandA) + position)]
+                operandAAddress = (getOperandValue(indirectInstruction.operandA) - 1.toShort()).toShort()
             }
             // <
             3 -> {
-                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, position)]
-                indirectInstruction.operandA--
+                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandA) + position)]
+                indirectInstruction.operandA -= setOperandValue(indirectInstruction.operandA, 1)
                 operandAAddress = getOperandValue(indirectInstruction.operandA)
             }
             else -> return null
@@ -74,13 +75,13 @@ class Executor {
             }
             // @
             2 -> {
-                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, position)]
-                operandBAddress = getOperandValue(indirectInstruction.operandB)
+                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandB) + position)]
+                operandBAddress = (getOperandValue(indirectInstruction.operandB) - 1.toShort()).toShort()
             }
             // <
             3 -> {
-                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, position)]
-                indirectInstruction.operandB--
+                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandB) + position)]
+                indirectInstruction.operandB -= setOperandValue(indirectInstruction.operandB, 1)
                 operandBAddress = getOperandValue(indirectInstruction.operandB)
             }
             else -> return null
@@ -198,9 +199,9 @@ class Executor {
             7.toByte() -> {
                 // 1. Мы уменьшаем значение из B
                 // 2. Затем делаем проверку на B != 0
-                if(--instruction.operandB != 0)
-                {
-
+                instruction.operandB = setOperandValue(instruction.operandB, (getOperandValue(instruction.operandB) - 1).toShort())
+                if(instruction.operandB != 0) {
+                    operandsAddresses.first.toInt()
                 }
                 else {
                     1
@@ -210,7 +211,44 @@ class Executor {
             // CMP
             8.toByte() -> {
                 // Мы сравниваем значения из A и B, и если они совпадают, мы пропускаем следующую инструкцию
-                
+                // Оба значения заданы явно
+                return if(operandsModes == Pair(0, 0)) {
+                    if(getOperandValue(instruction.operandA) == getOperandValue(instruction.operandB))
+                        2
+                    else
+                        1
+
+                }
+                else
+                {
+                    // Одно из значений (или оба) задано/заданы в виде относительного адреса
+                    if(operandsModes.first == 0) {
+                        if(getOperandValue(instruction.operandA) == getOperandValue(MemoryArray[calculateRound(
+                                MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)].operandB)) {
+                            2
+                        }
+                        else {
+                            1
+                        }
+                    } else if(operandsModes.second == 0) {
+                        if (getOperandValue(instruction.operandB) == getOperandValue(MemoryArray[calculateRound(
+                                MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.first)].operandA)) {
+                            2
+                        }
+                        else {
+                            1
+                        }
+                    }
+                    else {
+                        if(getOperandValue(MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.first)].operandA)
+                            == getOperandValue(MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)].operandB)) {
+                            2
+                        }
+                        else {
+                            1
+                        }
+                    }
+                }
             }
 
             // SPL
