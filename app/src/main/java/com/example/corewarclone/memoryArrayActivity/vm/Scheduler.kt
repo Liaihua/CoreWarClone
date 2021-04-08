@@ -7,13 +7,12 @@ import java.util.*
 const val CYCLES_UNTIL_TIE = 100000
 const val MAX_TASKS = 64
 
-var Warriors = arrayOf<Warrior>()
+var Warriors = ArrayDeque<Warrior>()
 
 class Warrior {
     var id: Int = 0
     var name: String = ""
     var taskQueue: ArrayDeque<Task> = ArrayDeque()
-
 }
 
 class Task {
@@ -33,5 +32,45 @@ class Task {
 // Такое своеобразное подобие корутин.
 
 class Scheduler {
-    fun schedule() {}
+    fun shiftRound(deque: ArrayDeque<Task>) {
+        if(deque.count() > 1)
+        {
+            val shiftedItem = deque.pollFirst()
+            deque.add(shiftedItem)
+        }
+    }
+
+    // Я вот думаю, стоит ли мне добавлять сюда код для обновления графической части
+    fun schedule() : Warrior? {
+        // Так как мы уже инициализировали список программ и задач, мы будем просто объявлять здесь цикл с выполнением задач
+        // Результатом метода schedule является вывод той программы, которая смогла "остаться в живых". Или же null в случае ничьи
+        val exec = Executor()
+        // Проверка исполнителя на правильность работы. Данный код будет перенесен в Scheduler
+        var cycles = 0
+        while (cycles < CYCLES_UNTIL_TIE) {
+            if(Warriors.count() == 1)
+                return Warriors.first()
+            for (warrior in Warriors)
+            {
+                if (warrior.taskQueue.isEmpty()) {
+                    Warriors.remove(warrior)
+                    continue
+                }
+
+                val task = warrior.taskQueue.first
+                val offset = exec.execute(warrior, task, MemoryArray[task.instructionPointer])
+                if(offset != null) {
+                    val iP = task.instructionPointer
+                    task.instructionPointer = calculateRound(MEMORY_ARRAY_SIZE, iP + offset)
+                }
+                else {
+                    warrior.taskQueue.remove(task)
+                }
+                shiftRound(warrior.taskQueue)
+            }
+            cycles++
+        }
+
+        return null
+    }
 }

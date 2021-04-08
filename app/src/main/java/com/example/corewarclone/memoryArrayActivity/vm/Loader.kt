@@ -124,7 +124,7 @@ class Loader {
             warrior.taskQueue.add(task)
             loadedWarriors += warrior
         }
-        Warriors = loadedWarriors
+        Warriors = ArrayDeque(loadedWarriors.toMutableList())
         Warriors.toMutableList().shuffle()
         return memoryArray
     }

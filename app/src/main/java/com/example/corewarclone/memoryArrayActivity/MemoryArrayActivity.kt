@@ -20,6 +20,7 @@ class MemoryArrayActivity : AppCompatActivity() {
 
     fun startExecution(view: View) {
 
+        // TODO Заменить на вызов планировщика (может, с использованием отдельного потока)
         val exec = Executor()
         // Проверка исполнителя на правильность работы. Данный код будет перенесен в Scheduler
         var cycles = 0
