@@ -12,13 +12,14 @@ import kotlin.random.Random
 // TODO Выясни, как пользоваться SurfaceView
 class MemoryArrayActivity : AppCompatActivity() {
     private var scheduler = Scheduler()
+    private lateinit var loader : Loader
     private lateinit var schedulerThread : SchedulerThread
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_memory_array)
 
         // Проверка загрузчика на правильность работы
-        val loader = Loader()
+        loader = Loader()
         // TODO Переделать MemoryArrayActivity для запуска множества программ (в моем случае - двух, но кто знает?)
         MemoryArray = loader.initializeMemoryArray(listOf("imp.rbin", "test.rbin"))
 
@@ -29,7 +30,10 @@ class MemoryArrayActivity : AppCompatActivity() {
     // TODO Сделать обновление компонентов (таких как MemoryArray, Scheduler и пр.) после нажатия кнопки
     fun startExecution(view: View) {
         if(!schedulerThread.isAlive) {
-            runOnUiThread(schedulerThread)
+            loader = Loader()
+            MemoryArray = loader.initializeMemoryArray(listOf("imp.rbin", "test.rbin"))
+            // TODO Сделать отображение диалогового окна без необходимости в runOnUiThread
+            schedulerThread.start()
         }
     }
 

@@ -48,6 +48,7 @@ class Scheduler {
 
     fun newVisualizerFromContext(context: Context) {
         visualizer = Visualizer(context)
+        visualizer.initializeMemoryArrayImage()
     }
 
     // Я вот думаю, стоит ли мне добавлять сюда код для обновления графической части?
@@ -59,6 +60,7 @@ class Scheduler {
             if (Warriors.count() == 1)
                 return Warriors.first()
             stepCycle()
+            visualizer.drawMemoryArray()
             cycles++
         }
 
