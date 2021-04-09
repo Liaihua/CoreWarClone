@@ -1,5 +1,7 @@
 package com.example.corewarclone.memoryArrayActivity.vm
 
+import android.app.AlertDialog
+import android.content.Context
 import java.util.*
 
 // TODO Догадайся
@@ -32,6 +34,9 @@ class Task {
 // Такое своеобразное подобие корутин.
 
 class Scheduler {
+    // Может, стоит добавить сюда какой-нибудь класс-визуализатор, дабы не осложнять себе жизнь совмещением
+    // задач планировщика с рисованием графики?
+    private lateinit var visualizer: Visualizer
     private var cycles = 0
     private val exec = Executor()
     private fun shiftRound(deque: ArrayDeque<Task>) {
@@ -39,6 +44,10 @@ class Scheduler {
             val shiftedItem = deque.pollFirst()
             deque.add(shiftedItem)
         }
+    }
+
+    fun newVisualizerFromContext(context: Context) {
+        visualizer = Visualizer(context)
     }
 
     // Я вот думаю, стоит ли мне добавлять сюда код для обновления графической части?
@@ -53,13 +62,15 @@ class Scheduler {
             cycles++
         }
 
+        cycles = 0
+
         return if (Warriors.count() > 1)
             null
         else
             Warriors.first()
     }
 
-    // TODO Переделать класс Schedule, чтобы была возможность приостанавливать выполнение
+    // TODO Переделать метод, добавив отображение текущих и измененных (?) инструкций
     fun stepCycle() {
         for (warrior in Warriors) {
             if (warrior.taskQueue.isEmpty()) {
@@ -80,9 +91,3 @@ class Scheduler {
     }
 }
 
-class SchedulerThread(var loadedScheduler: Scheduler? = null) : Thread() {
-    private var scheduler : Scheduler = loadedScheduler ?: Scheduler()
-    override fun run() {
-        scheduler.schedule()
-    }
-}

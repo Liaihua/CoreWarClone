@@ -20,4 +20,6 @@
     <string name="choose_folder_menu_item_title">Choose a folder</string>
     <string name="dialog_delete_program_file">Delete file?</string>
     <string name="delete_file_dialog_positive">DELETE</string>
+    <string name="tie_string">It\'s a tie!</string>
+    <string name="winner_string">The winner is:</string>
 </resources>

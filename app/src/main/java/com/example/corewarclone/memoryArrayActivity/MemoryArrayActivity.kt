@@ -11,6 +11,7 @@ import kotlin.random.Random
 
 // TODO Выясни, как пользоваться SurfaceView
 class MemoryArrayActivity : AppCompatActivity() {
+    private var scheduler = Scheduler()
     private lateinit var schedulerThread : SchedulerThread
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,11 +23,14 @@ class MemoryArrayActivity : AppCompatActivity() {
         MemoryArray = loader.initializeMemoryArray(listOf("imp.rbin", "test.rbin"))
 
 
-        schedulerThread = SchedulerThread()
+        schedulerThread = SchedulerThread(context = this)
     }
 
+    // TODO Сделать обновление компонентов (таких как MemoryArray, Scheduler и пр.) после нажатия кнопки
     fun startExecution(view: View) {
-        schedulerThread.start()
+        if(!schedulerThread.isAlive) {
+            runOnUiThread(schedulerThread)
+        }
     }
 
     fun stopExecution(view: View) {
