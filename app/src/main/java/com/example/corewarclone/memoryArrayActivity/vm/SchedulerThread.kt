@@ -8,10 +8,19 @@ import com.example.corewarclone.R
 
 class SchedulerThread(var loadedScheduler: Scheduler? = null, var context: Context) : Thread() {
     private var scheduler : Scheduler = loadedScheduler ?: Scheduler()
+    override fun interrupt() {
+        super.interrupt()
+        scheduler.interrupted = true
+    }
     override fun run() {
         scheduler.newVisualizerFromContext(context)
         val result = scheduler.schedule()
+
+        if(scheduler.interrupted)
+            return
+
         val alertDialog = AlertDialog.Builder(context)
+
         if(result == null) {
             alertDialog.setMessage(R.string.tie_string)
         }

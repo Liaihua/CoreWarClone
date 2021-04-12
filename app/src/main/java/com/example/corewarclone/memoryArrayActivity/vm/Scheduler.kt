@@ -34,6 +34,8 @@ class Task {
 // Такое своеобразное подобие корутин.
 
 class Scheduler {
+    var interrupted: Boolean = false
+
     // Может, стоит добавить сюда какой-нибудь класс-визуализатор, дабы не осложнять себе жизнь совмещением
     // задач планировщика с рисованием графики?
     private lateinit var visualizer: Visualizer
@@ -56,11 +58,11 @@ class Scheduler {
         // Так как мы уже инициализировали список программ и задач, мы будем просто объявлять здесь цикл с выполнением задач
         // Результатом метода schedule является вывод той программы, которая смогла "остаться в живых". Или же null в случае ничьи
 
-        while (cycles < CYCLES_UNTIL_TIE) {
+        while (cycles < CYCLES_UNTIL_TIE && !interrupted) {
             if (Warriors.count() == 1)
                 return Warriors.first()
             stepCycle()
-            visualizer.drawMemoryArray()
+            visualizer.drawMemoryArray(interrupted)
             cycles++
         }
 

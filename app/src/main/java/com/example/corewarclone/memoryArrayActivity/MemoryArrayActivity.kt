@@ -38,7 +38,13 @@ class MemoryArrayActivity : AppCompatActivity() {
     }
 
     fun stopExecution(view: View) {
+        schedulerThread.interrupt()
         finish()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        schedulerThread.interrupt()
     }
 
     // Эксперименты с SurfaceView

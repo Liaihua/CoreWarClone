@@ -2,6 +2,7 @@ package com.example.corewarclone.memoryArrayActivity.vm
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Paint
 import android.view.SurfaceView
 import com.example.corewarclone.R
@@ -23,17 +24,58 @@ class Visualizer(context: Context) {
 
     // Метод для начальной отрисовки сетки (ну или в данном случае - MemoryArray)
     fun initializeMemoryArrayImage() {
+        val width = surfaceView.width / 80.0;
+        val height = surfaceView.height / 100.0
+        val paint = Paint()
+        paint.color = Color.WHITE
+        paint.strokeWidth = 1.0F
+
+        // TODO Создать массив, в котором будут храниться данные о клетках
+        // К тому же, придется добавить к этому массиву место для хранения id, которому принадлежит
+        // данная клетка
+
         var canvas = surfaceView.holder.lockCanvas()
-        canvas.drawRGB(20, 20, 20)
+        var lineWidth = 0.0
+        var lineHeight = 0.0
+        repeat(80) {
+            lineWidth += width
+            canvas.drawLine(
+                lineWidth.toFloat(),
+                0.toFloat(),
+                lineWidth.toFloat(),
+                surfaceView.height.toFloat(),
+                paint
+            )
+        }
+        repeat(100) {
+            lineHeight += height
+            canvas.drawLine(
+                0.toFloat(),
+                lineHeight.toFloat(),
+                surfaceView.width.toFloat(),
+                lineHeight.toFloat(),
+                paint
+            )
+        }
         surfaceView.holder.unlockCanvasAndPost(canvas)
     }
 
     // Я думаю, его можно использовать для обновления клеток, соответствующих инструкциям
-    fun drawMemoryArray() {
-        var canvas = surfaceView.holder.lockCanvas()
-        var paint = Paint()
-        paint.color = rand.nextInt()
-        canvas.drawCircle(rand.nextFloat(), rand.nextFloat(), rand.nextFloat(), paint)
-        surfaceView.holder.unlockCanvasAndPost(canvas)
+    // Вопрос: а я могу создать еще один слой поверх основной канвы с "решеткой"?
+    // Просто дело в том, что во время перерисовки очень заметно мерцание экрана
+    fun drawMemoryArray(interrupted: Boolean) {
+        if (!interrupted) {
+            var canvas = surfaceView.holder.lockCanvas()
+            var paint = Paint()
+
+            paint.color = Color.BLUE
+            canvas.drawText(
+                rand.nextInt(16).toString(),
+                surfaceView.width.toFloat() % rand.nextInt(),
+                surfaceView.height.toFloat() % rand.nextInt(),
+                paint
+            )
+            surfaceView.holder.unlockCanvasAndPost(canvas)
+        }
     }
 }
