@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Rect
 import android.view.SurfaceView
 import com.example.corewarclone.R
 import kotlinx.android.synthetic.main.activity_memory_array.view.*
@@ -24,36 +25,36 @@ class Visualizer(context: Context) {
 
     // Метод для начальной отрисовки сетки (ну или в данном случае - MemoryArray)
     fun initializeMemoryArrayImage() {
-        val width = surfaceView.width / 80.0;
-        val height = surfaceView.height / 100.0
+        val width = surfaceView.width.toFloat() / 80.0F
+        val height = surfaceView.height.toFloat() / 64.0F
         val paint = Paint()
         paint.color = Color.WHITE
-        paint.strokeWidth = 1.0F
+        paint.strokeWidth = 1F
 
         // TODO Создать массив, в котором будут храниться данные о клетках
         // К тому же, придется добавить к этому массиву место для хранения id, которому принадлежит
         // данная клетка
 
         var canvas = surfaceView.holder.lockCanvas()
-        var lineWidth = 0.0
-        var lineHeight = 0.0
-        repeat(80) {
+        var lineWidth = 0.0F
+        var lineHeight = 0.0F
+        repeat(79) {
             lineWidth += width
             canvas.drawLine(
-                lineWidth.toFloat(),
+                lineWidth,
                 0.toFloat(),
-                lineWidth.toFloat(),
+                lineWidth,
                 surfaceView.height.toFloat(),
                 paint
             )
         }
-        repeat(100) {
+        repeat(63) {
             lineHeight += height
             canvas.drawLine(
                 0.toFloat(),
-                lineHeight.toFloat(),
+                lineHeight,
                 surfaceView.width.toFloat(),
-                lineHeight.toFloat(),
+                lineHeight,
                 paint
             )
         }
@@ -65,16 +66,9 @@ class Visualizer(context: Context) {
     // Просто дело в том, что во время перерисовки очень заметно мерцание экрана
     fun drawMemoryArray(interrupted: Boolean) {
         if (!interrupted) {
+            // lockCanvas также может брать параметр Rect в качестве области рисования
+            // Почему бы мне этим не воспользоваться?
             var canvas = surfaceView.holder.lockCanvas()
-            var paint = Paint()
-
-            paint.color = Color.BLUE
-            canvas.drawText(
-                rand.nextInt(16).toString(),
-                surfaceView.width.toFloat() % rand.nextInt(),
-                surfaceView.height.toFloat() % rand.nextInt(),
-                paint
-            )
             surfaceView.holder.unlockCanvasAndPost(canvas)
         }
     }
