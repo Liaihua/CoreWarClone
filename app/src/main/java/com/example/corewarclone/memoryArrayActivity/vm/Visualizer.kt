@@ -5,9 +5,11 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.RectF
 import android.view.SurfaceView
 import com.example.corewarclone.R
 import kotlinx.android.synthetic.main.activity_memory_array.view.*
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 /*
@@ -22,6 +24,8 @@ class Visualizer(context: Context) {
     var surfaceView: SurfaceView =
         (context as Activity).findViewById(R.id.memory_array_surface_view)
     val rand = Random
+
+    var rectangles = arrayOf<RectF>()
 
     // Метод для начальной отрисовки сетки (ну или в данном случае - MemoryArray)
     fun initializeMemoryArrayImage() {
@@ -58,6 +62,25 @@ class Visualizer(context: Context) {
                 paint
             )
         }
+        lineWidth = 0.0F
+        lineHeight = 0.0F
+        for(currentWidth in 0..79)
+        {
+
+
+            for(currentHeight in 0..63)
+            {
+                // TODO Переделать создание массива (чтобы все было в строчку, а не по диагонали)
+                var rectF = RectF(
+                lineWidth + 0.5F,
+                lineHeight + 0.5F,
+                lineWidth + width - 0.5F,
+                lineHeight + height - 0.5F)
+                rectangles += rectF
+                lineWidth += width
+                lineHeight += height
+            }
+        }
         surfaceView.holder.unlockCanvasAndPost(canvas)
     }
 
@@ -68,8 +91,15 @@ class Visualizer(context: Context) {
         if (!interrupted) {
             // lockCanvas также может брать параметр Rect в качестве области рисования
             // Почему бы мне этим не воспользоваться?
-            var canvas = surfaceView.holder.lockCanvas()
-            surfaceView.holder.unlockCanvasAndPost(canvas)
+            val paint = Paint()
+            paint.color = Color.BLUE
+            for (rect in rectangles) {
+                var canvas = surfaceView.holder?.lockCanvas(Rect(rect.left.roundToInt(), rect.top.roundToInt(), rect.right.roundToInt(), rect.bottom.roundToInt()))
+                if(canvas != null) {
+                    canvas.drawRect(rect, paint)
+                    surfaceView.holder.unlockCanvasAndPost(canvas)
+                }
+            }
         }
     }
 }
