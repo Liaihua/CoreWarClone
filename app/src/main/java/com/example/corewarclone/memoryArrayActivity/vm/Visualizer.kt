@@ -62,43 +62,43 @@ class Visualizer(context: Context) {
                 paint
             )
         }
+
+        // Создание массива прямоугольников
         lineWidth = 0.0F
         lineHeight = 0.0F
-        for(currentWidth in 0..79)
+
+        for(currentWidth in 0..63)
         {
-
-
-            for(currentHeight in 0..63)
-            {
-                // TODO Переделать создание массива (чтобы все было в строчку, а не по диагонали)
+            for(currentHeight in 0..79) {
                 var rectF = RectF(
-                lineWidth + 0.5F,
-                lineHeight + 0.5F,
-                lineWidth + width - 0.5F,
-                lineHeight + height - 0.5F)
+                    // 0.5F - Место для отрисованной сетки
+                    lineWidth + 0.5F,
+                    lineHeight + 0.5F,
+                    lineWidth + width - 0.5F,
+                    lineHeight + height - 0.5F
+                )
                 rectangles += rectF
                 lineWidth += width
-                lineHeight += height
             }
+            lineWidth = 0.0F
+            lineHeight += height
         }
         surfaceView.holder.unlockCanvasAndPost(canvas)
     }
 
+    val colors = arrayOf(Color.RED, Color.GREEN, Color.BLUE)
+    
     // Я думаю, его можно использовать для обновления клеток, соответствующих инструкциям
-    // Вопрос: а я могу создать еще один слой поверх основной канвы с "решеткой"?
-    // Просто дело в том, что во время перерисовки очень заметно мерцание экрана
     fun drawMemoryArray(interrupted: Boolean) {
         if (!interrupted) {
-            // lockCanvas также может брать параметр Rect в качестве области рисования
-            // Почему бы мне этим не воспользоваться?
+            // Проверка работы с массивом прямоугольников
             val paint = Paint()
-            paint.color = Color.BLUE
-            for (rect in rectangles) {
-                var canvas = surfaceView.holder?.lockCanvas(Rect(rect.left.roundToInt(), rect.top.roundToInt(), rect.right.roundToInt(), rect.bottom.roundToInt()))
-                if(canvas != null) {
-                    canvas.drawRect(rect, paint)
-                    surfaceView.holder.unlockCanvasAndPost(canvas)
-                }
+            paint.color = colors[rand.nextInt(3)]
+            var rect = rectangles[rand.nextInt(rectangles.count())]
+            var canvas = surfaceView.holder?.lockCanvas(Rect(rect.left.roundToInt(), rect.top.roundToInt(), rect.right.roundToInt(), rect.bottom.roundToInt()))
+            if(canvas != null) {
+                canvas.drawRect(rect, paint)
+                surfaceView.holder.unlockCanvasAndPost(canvas)
             }
         }
     }
