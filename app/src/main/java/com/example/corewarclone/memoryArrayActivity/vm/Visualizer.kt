@@ -25,6 +25,10 @@ class Visualizer(context: Context) {
         (context as Activity).findViewById(R.id.memory_array_surface_view)
     val rand = Random
 
+    // Наш массив с клетками - не единственная вещь, которая нас интересует
+    // Обдумай, что мы будем рисовать:
+    // 1. Инструкции программ
+    // 2. Указатели на инструкцию (для текущей задачи, или для всех сразу?)
     var rectangles = arrayOf<RectF>()
 
     // Метод для начальной отрисовки сетки (ну или в данном случае - MemoryArray)

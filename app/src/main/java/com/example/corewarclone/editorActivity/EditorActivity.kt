@@ -13,10 +13,14 @@ import com.example.corewarclone.R
 import com.example.corewarclone.ProgramFileManager
 import com.example.corewarclone.memoryArrayActivity.MemoryArrayActivity
 import com.example.corewarclone.memoryArrayActivity.translator.Translator
+import java.io.File
+import java.util.ArrayList
 
 const val ACTION_CHOOSE_REDCODE_FILE = 0xbeef
 
 class EditorActivity : AppCompatActivity() {
+    // binariesList используется для формирования списка бинарников, которые мы будем загружать в симулятор
+    private lateinit var binariesList : List<String>
     private val programFileManager = ProgramFileManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,7 +87,19 @@ class EditorActivity : AppCompatActivity() {
                     errorDialog.show(supportFragmentManager, "error_message")
                     return
                 }
-                val intent = Intent(this, MemoryArrayActivity::class.java)
+                binariesList = binariesList + dirString
+                binariesList = binariesList.map {
+                    it.split(File.separator).last()             // Отделяем имя файла от пути
+                      .split(".").first() + ".rbin"  // И меняем расширение
+                }
+                // Использование конструктора отменяется.
+                // Лучше воспользоваться другим способом и загрузить данные в onCreate
+                val intent = Intent(this, MemoryArrayActivity::class.java).apply {
+                    // TODO Найти способ передачи массива строк новой Activity
+                    val bundle = Bundle()
+                    bundle.putStringArray("BINARIES", binariesList.toTypedArray())
+                    this.putExtra("BINARIES", bundle)
+                }
                 startActivity(intent)
             }
         }
@@ -138,13 +154,13 @@ class EditorActivity : AppCompatActivity() {
                     return true
                 }
 
+                binariesList = listOf(firstFileName.toString())
+
                 val secondFileIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     type = "*/*"
                     addCategory(Intent.CATEGORY_OPENABLE)
                 }
                 startActivityForResult(secondFileIntent, ACTION_CHOOSE_REDCODE_FILE)
-
-                // Поделаю пока ВМ
 
                 return true
             }

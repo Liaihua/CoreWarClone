@@ -12,28 +12,34 @@ import kotlin.random.Random
 // TODO Выясни, как пользоваться SurfaceView
 class MemoryArrayActivity : AppCompatActivity() {
     private var scheduler = Scheduler()
-    private lateinit var loader : Loader
-    private lateinit var schedulerThread : SchedulerThread
+    private var binariesList : List<String>? = null
+    private lateinit var loader: Loader
+    private lateinit var schedulerThread: SchedulerThread
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_memory_array)
 
-        // Проверка загрузчика на правильность работы
-        loader = Loader()
-        // TODO Переделать MemoryArrayActivity для запуска множества программ (в моем случае - двух, но кто знает?)
-        MemoryArray = loader.initializeMemoryArray(listOf("imp.rbin", "test.rbin"))
-
-
-        schedulerThread = SchedulerThread(context = this)
+        binariesList = intent.getBundleExtra("BINARIES")
+                             .getStringArray("BINARIES")?.toList()
+        if (binariesList != null) {
+            // TODO Сделать инициализацию изображения игрового поля перед запуском игры
+            // Хотя, может и не стоит?
+            schedulerThread = SchedulerThread(scheduler, context = this)
+        }
+        else
+            finish()
     }
 
-    // TODO Сделать обновление компонентов (таких как MemoryArray, Scheduler и пр.) после нажатия кнопки
     fun startExecution(view: View) {
-        if(!schedulerThread.isAlive) {
-            loader = Loader()
-            MemoryArray = loader.initializeMemoryArray(listOf("imp.rbin", "test.rbin"))
-            // TODO Сделать отображение диалогового окна без необходимости в runOnUiThread
-            schedulerThread.start()
+        if (!schedulerThread.isAlive) {
+            if(binariesList != null) {
+                loader = Loader()
+                MemoryArray = loader.initializeMemoryArray(binariesList!!)
+                // TODO Сделать отображение диалогового окна без необходимости в runOnUiThread
+                schedulerThread.start()
+            }
+            else
+                finish()
         }
     }
 
@@ -53,7 +59,7 @@ class MemoryArrayActivity : AppCompatActivity() {
     * пока я не вызову startExecution.
     * */
     fun stepExecution(view: View) {
-        if(schedulerThread.isAlive)
+        if (schedulerThread.isAlive)
             return
         val surfaceView = findViewById<SurfaceView>(R.id.memory_array_surface_view)
         val canvas = surfaceView.holder.lockCanvas()
