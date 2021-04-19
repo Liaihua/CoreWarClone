@@ -28,7 +28,7 @@ fun calculateRound(arraySize: Int, index: Int) : Int {
 
 class Loader {
     private val programFileManager = ProgramFileManager
-    var loadedWarriors = arrayOf<Warrior>()
+    var loadedWarriors = listOf<Warrior>()
     var loadedWarriorsBounds = arrayOf<Pair<Int, Int>>()
 
     private fun checkMagicNum(magicNumByteArray: ByteArray) : Boolean {
@@ -123,7 +123,7 @@ class Loader {
             task.instructionPointer = startIndex
             warrior.taskQueue = ArrayDeque()
             warrior.taskQueue.add(task)
-            loadedWarriors += warrior
+            loadedWarriors = loadedWarriors + warrior
 
 
             for (index in startIndex..currentIndex) {
@@ -131,8 +131,9 @@ class Loader {
             }
         }
 
+        loadedWarriors.toMutableList().shuffle()
         Warriors = ArrayDeque(loadedWarriors.toMutableList())
-        (Warriors as MutableList<Warrior>).shuffle()
+
         return memoryArray
     }
 }

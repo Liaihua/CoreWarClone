@@ -99,7 +99,8 @@ class Visualizer(context: Context) {
         if (!interrupted) {
             val paint = Paint()
             paint.color = Color.WHITE
-            val rectIndices = rectangles.indices.filter { MemoryArray[it].opcode != 0.toByte() }
+            // val rectIndices = rectangles.indices.filter { MemoryArray[it].opcode != 0.toByte() }
+            val rectIndices = Warriors.map {it.taskQueue.first.instructionPointer}
             for (rectIndex in rectIndices) {
                 val rect = rectangles[rectIndex]
                 var canvas = surfaceView.holder?.lockCanvas(
