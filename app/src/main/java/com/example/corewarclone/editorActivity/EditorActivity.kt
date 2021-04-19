@@ -95,7 +95,6 @@ class EditorActivity : AppCompatActivity() {
                 // Использование конструктора отменяется.
                 // Лучше воспользоваться другим способом и загрузить данные в onCreate
                 val intent = Intent(this, MemoryArrayActivity::class.java).apply {
-                    // TODO Найти способ передачи массива строк новой Activity
                     val bundle = Bundle()
                     bundle.putStringArray("BINARIES", binariesList.toTypedArray())
                     this.putExtra("BINARIES", bundle)

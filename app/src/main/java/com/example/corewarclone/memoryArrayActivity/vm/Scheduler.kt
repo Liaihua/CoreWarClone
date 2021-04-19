@@ -11,6 +11,10 @@ const val MAX_TASKS = 64
 
 var Warriors = ArrayDeque<Warrior>()
 
+// Список id-шников программ, которые владеют инструкцией по индексу MemoryArray
+// Если данная инструкция никому не принадлежит, то назначается значение -1
+var occupiedIndices = arrayOf<Int>()
+
 class Warrior {
     var id: Int = 0
     var name: String = ""
@@ -36,11 +40,11 @@ class Task {
 class Scheduler {
     var interrupted: Boolean = false
 
-    // Может, стоит добавить сюда какой-нибудь класс-визуализатор, дабы не осложнять себе жизнь совмещением
-    // задач планировщика с рисованием графики?
     private lateinit var visualizer: Visualizer
     private var cycles = 0
     private val exec = Executor()
+
+    // Функция для цикличной перестановки элементов в деке
     private fun shiftRound(deque: ArrayDeque<Task>) {
         if (deque.count() > 1) {
             val shiftedItem = deque.pollFirst()
@@ -86,6 +90,7 @@ class Scheduler {
             val offset = exec.execute(warrior, task, MemoryArray[task.instructionPointer])
             if (offset != null) {
                 val iP = task.instructionPointer
+                occupiedIndices[iP] = warrior.id
                 task.instructionPointer = calculateRound(MEMORY_ARRAY_SIZE, iP + offset)
             } else {
                 warrior.taskQueue.remove(task)
