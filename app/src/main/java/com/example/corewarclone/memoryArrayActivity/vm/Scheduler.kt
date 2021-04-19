@@ -11,10 +11,6 @@ const val MAX_TASKS = 64
 
 var Warriors = ArrayDeque<Warrior>()
 
-// Список id-шников программ, которые владеют инструкцией по индексу MemoryArray
-// Если данная инструкция никому не принадлежит, то назначается значение -1
-var occupiedIndices = arrayOf<Int>()
-
 class Warrior {
     var id: Int = 0
     var name: String = ""
@@ -90,7 +86,6 @@ class Scheduler {
             val offset = exec.execute(warrior, task, MemoryArray[task.instructionPointer])
             if (offset != null) {
                 val iP = task.instructionPointer
-                occupiedIndices[iP] = warrior.id
                 task.instructionPointer = calculateRound(MEMORY_ARRAY_SIZE, iP + offset)
             } else {
                 warrior.taskQueue.remove(task)

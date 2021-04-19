@@ -83,7 +83,6 @@ class Loader {
 
     fun initializeMemoryArray(filePaths: List<String>) : Array<Instruction> {
         var memoryArray = Array<Instruction>(MEMORY_ARRAY_SIZE) { Instruction(opcode = 0, operandA = 0, operandB = 0) }
-        occupiedIndices = Array(MEMORY_ARRAY_SIZE) { -1 }
         var warriorCount = 0
         val rand = Random
         for(filePath in filePaths) {
@@ -124,11 +123,6 @@ class Loader {
             warrior.taskQueue = ArrayDeque()
             warrior.taskQueue.add(task)
             loadedWarriors = loadedWarriors + warrior
-
-
-            for (index in startIndex..currentIndex) {
-                occupiedIndices[index] = warrior.id
-            }
         }
 
         loadedWarriors.toMutableList().shuffle()
