@@ -71,9 +71,8 @@ class Visualizer(context: Context) {
         lineWidth = 0.0F
         lineHeight = 0.0F
 
-        for(currentWidth in 0..63)
-        {
-            for(currentHeight in 0..79) {
+        for (currentWidth in 0..63) {
+            for (currentHeight in 0..79) {
                 var rectF = RectF(
                     // 0.5F - Место для отрисованной сетки
                     lineWidth + 0.5F,
@@ -90,19 +89,32 @@ class Visualizer(context: Context) {
         surfaceView.holder.unlockCanvasAndPost(canvas)
     }
 
-    val colors = arrayOf(Color.RED, Color.GREEN, Color.BLUE)
-    
+    // TODO Сделать наконец отрисовку массива
     // Я думаю, его можно использовать для обновления клеток, соответствующих инструкциям
     fun drawMemoryArray(interrupted: Boolean) {
+        // Проверка работы с массивом прямоугольников
+        // Ну и еще эксперименты с рисованием массива, не у нас здесь есть одна проблема:
+        // перед рисованием у нас идет фильтрация массива. Мы делаем ее КАЖДЫЙ РАЗ,
+        // ничего не записывая в промежуточный буфер. Плюс, мы КАЖДЫЙ РАЗ перерисовываем старые ячейки.
+        // Из-за этого рисование постепенно замедляется
         if (!interrupted) {
-            // Проверка работы с массивом прямоугольников
             val paint = Paint()
-            paint.color = colors[rand.nextInt(3)]
-            var rect = rectangles[rand.nextInt(rectangles.count())]
-            var canvas = surfaceView.holder?.lockCanvas(Rect(rect.left.roundToInt(), rect.top.roundToInt(), rect.right.roundToInt(), rect.bottom.roundToInt()))
-            if(canvas != null) {
-                canvas.drawRect(rect, paint)
-                surfaceView.holder.unlockCanvasAndPost(canvas)
+            paint.color = Color.WHITE
+            val rectIndices = rectangles.indices.filter { MemoryArray[it].opcode != 0.toByte() }
+            for (rectIndex in rectIndices) {
+                val rect = rectangles[rectIndex]
+                var canvas = surfaceView.holder?.lockCanvas(
+                    Rect(
+                        rect.left.roundToInt(),
+                        rect.top.roundToInt(),
+                        rect.right.roundToInt(),
+                        rect.bottom.roundToInt()
+                    )
+                )
+                if (canvas != null) {
+                    canvas.drawRect(rect, paint)
+                    surfaceView.holder.unlockCanvasAndPost(canvas)
+                }
             }
         }
     }

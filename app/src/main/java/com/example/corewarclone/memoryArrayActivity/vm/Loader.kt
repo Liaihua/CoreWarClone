@@ -5,7 +5,7 @@ import com.example.corewarclone.memoryArrayActivity.translator.INSTRUCTION_BYTES
 import java.util.*
 import kotlin.random.Random
 
-const val MEMORY_ARRAY_SIZE = 1024
+const val MEMORY_ARRAY_SIZE = 5120
 
 var MemoryArray = arrayOf<Instruction>()
 
