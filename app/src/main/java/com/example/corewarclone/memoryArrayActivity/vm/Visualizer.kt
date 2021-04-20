@@ -22,7 +22,10 @@ import kotlin.random.Random
 class Visualizer(context: Context) {
     var surfaceView: SurfaceView =
         (context as Activity).findViewById(R.id.memory_array_surface_view)
-    val rand = Random
+
+    // Массивы, используемые для рисования различимых ячеек программ
+    val warriorsColors = arrayOf(Color.RED, Color.BLUE)
+    var warriorsToColors : HashMap<Int, Int> = hashMapOf()
 
     // Наш массив с клетками - не единственная вещь, которая нас интересует
     // Обдумай, что мы будем рисовать:
@@ -82,6 +85,12 @@ class Visualizer(context: Context) {
             lineHeight += height
         }
         surfaceView.holder.unlockCanvasAndPost(canvas)
+
+        // Инициализация цветов, используемых для программ
+        for ((counter, warrior) in Warriors.withIndex())
+        {
+            warriorsToColors[warrior.id] = counter
+        }
     }
 
     // TODO Сделать наконец отрисовку массива
@@ -94,14 +103,14 @@ class Visualizer(context: Context) {
         // Из-за этого рисование постепенно замедляется
         if (!interrupted) {
             val paint = Paint()
-            paint.color = Color.WHITE
             var rectIndices =
                 Warriors.filter { !it.taskQueue.isEmpty() }.map {
-                    it.taskQueue.first.instructionPointer
+                    Pair(it.id, it.taskQueue.first.instructionPointer)
                 }
             for (rectIndex in rectIndices) {
+                paint.color = warriorsColors[warriorsToColors[rectIndex.first]!!]
 
-                    val rect = rectangles[rectIndex]
+                    val rect = rectangles[rectIndex.second]
                     var canvas = surfaceView.holder?.lockCanvas(
                         Rect(
                             rect.left.roundToInt(),
