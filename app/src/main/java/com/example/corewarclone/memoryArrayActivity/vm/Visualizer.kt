@@ -38,10 +38,6 @@ class Visualizer(context: Context) {
         paint.color = Color.WHITE
         paint.strokeWidth = 1F
 
-        // TODO Создать массив, в котором будут храниться данные о клетках
-        // К тому же, придется добавить к этому массиву место для хранения id, которому принадлежит
-        // данная клетка
-
         var canvas = surfaceView.holder.lockCanvas()
         var lineWidth = 0.0F
         var lineHeight = 0.0F

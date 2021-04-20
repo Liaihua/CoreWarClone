@@ -12,7 +12,6 @@ class Executor {
     // TODO Сделать проверку на наличие багов во время всяких присваиваний
     // (А если более конкретно, то проверку на перезапись режимов адресации
     // (хотя кто знает, что еще мне попадется))
-    // А может, стоит попробовать отладку на массиве меньших размеров?
 
     var modifiedInstruction: Int? = null
 
@@ -59,7 +58,7 @@ class Executor {
             3 -> {
                 // TODO Переделать режим адресации, поскольку он декрементирует Int, а не Short
                 val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandA) + position)]
-                indirectInstruction.operandA -= setOperandValue(indirectInstruction.operandA, 1)
+                indirectInstruction.operandA = setOperandValue(indirectInstruction.operandA, (getOperandValue(indirectInstruction.operandA) - 1).toShort())
                 operandAAddress = getOperandValue(indirectInstruction.operandA)
             }
             else -> return null
@@ -84,7 +83,7 @@ class Executor {
             // <
             3 -> {
                 val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandB) + position)]
-                indirectInstruction.operandB -= setOperandValue(indirectInstruction.operandB, 1)
+                indirectInstruction.operandB = setOperandValue(indirectInstruction.operandB,  (getOperandValue(indirectInstruction.operandB) - 1).toShort())
                 operandBAddress = getOperandValue(indirectInstruction.operandB)
             }
             else -> return null
@@ -108,6 +107,8 @@ class Executor {
             getOperandAddressMode(instruction.operandA),
             getOperandAddressMode(instruction.operandB))
 
+        modifiedInstruction = null
+
         when(instruction.opcode) {
             // DAT
             0.toByte() -> {
@@ -122,21 +123,27 @@ class Executor {
                     return null
                 }
                 else {
-                    // TODO Переделать работу с массивами (дело в том, что мы передаем ссылки на элементы, что не очень хорошо)
+                    // TODO Переделать работу с массивами (дело в том, что в некоторых местах мы передаем ССЫЛКИ на элементы, а не ЗНАЧЕНИЯ, что не очень хорошо)
+                        // И это касается не только MOV'a
                     // Если A установлен в '#'
                     if(operandsModes.first == 0) {
+                        val movedInstruction =
                         MemoryArray[calculateRound(
                             MEMORY_ARRAY_SIZE,
                             task.instructionPointer + operandsAddresses.second
                         )]
-                            .operandA = instruction.operandA
+                        movedInstruction.operandA = setOperandValue(movedInstruction.operandA, instruction.operandA.toShort())
                     }
                     // Если A установлен в другие режимы
                     else {
+                        val movedInstruction =
                         MemoryArray[calculateRound(
                             MEMORY_ARRAY_SIZE,
                             task.instructionPointer + operandsAddresses.second
-                        )] = instruction
+                        )]
+                        movedInstruction.opcode = instruction.opcode
+                        movedInstruction.operandA = instruction.operandA
+                        movedInstruction.operandB = instruction.operandB
                     }
                     return 1
                 }
@@ -144,10 +151,15 @@ class Executor {
 
             // ADD
             2.toByte() -> {
+                // TODO Переделай на присваивание вместо действий через += и -=
                 // Так как B является ссылкой на операнд назначения, нам нужен любой режим адресации, кроме явного
                 return if(operandsModes.second != 0) {
                     val processedInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
-                    processedInstruction.operandB += getOperandValue(MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA)
+                    // processedInstruction.operandB += getOperandValue(MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA)
+                    processedInstruction.operandB = setOperandValue(
+                        processedInstruction.operandB,
+                        (MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA.toShort() +
+                                getOperandValue(processedInstruction.operandB)).toShort())
                     1
                 }
                 else {
@@ -160,7 +172,10 @@ class Executor {
                 // Читай комментарий к ADD
                 return if(operandsModes.second != 0) {
                     val processedInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
-                    processedInstruction.operandB -= getOperandValue(MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA)
+                    processedInstruction.operandB = setOperandValue(
+                        processedInstruction.operandB,
+                        (MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA.toShort() -
+                                getOperandValue(processedInstruction.operandB)).toShort())
                     1
                 }
                 else {

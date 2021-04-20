@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import com.example.corewarclone.R
 
+// TODO Решить вопрос с отображением диалогового окна (возможно, с использованием доп. потока и join'ом)
 class SchedulerThread(var loadedScheduler: Scheduler? = null, var context: Context) : Thread() {
     private var scheduler : Scheduler = loadedScheduler ?: Scheduler()
     override fun interrupt() {
