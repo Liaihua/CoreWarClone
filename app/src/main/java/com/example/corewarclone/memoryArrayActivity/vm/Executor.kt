@@ -145,6 +145,7 @@ class Executor {
                         movedInstruction.operandA = instruction.operandA
                         movedInstruction.operandB = instruction.operandB
                     }
+                    modifiedInstruction = calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)
                     return 1
                 }
             }
@@ -160,6 +161,7 @@ class Executor {
                         processedInstruction.operandB,
                         (MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA.toShort() +
                                 getOperandValue(processedInstruction.operandB)).toShort())
+                    modifiedInstruction = calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)
                     1
                 }
                 else {
@@ -176,6 +178,7 @@ class Executor {
                         processedInstruction.operandB,
                         (MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA.toShort() -
                                 getOperandValue(processedInstruction.operandB)).toShort())
+                    modifiedInstruction = calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)
                     1
                 }
                 else {
