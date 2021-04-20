@@ -14,6 +14,8 @@ class Executor {
     // (хотя кто знает, что еще мне попадется))
     // А может, стоит попробовать отладку на массиве меньших размеров?
 
+    var modifiedInstruction: Int? = null
+
     private fun getOperandValue(operand: Int) : Short {
         return (operand and 0xFFFF).toShort()
     }
@@ -55,6 +57,7 @@ class Executor {
             }
             // <
             3 -> {
+                // TODO Переделать режим адресации, поскольку он декрементирует Int, а не Short
                 val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandA) + position)]
                 indirectInstruction.operandA -= setOperandValue(indirectInstruction.operandA, 1)
                 operandAAddress = getOperandValue(indirectInstruction.operandA)
@@ -119,7 +122,8 @@ class Executor {
                     return null
                 }
                 else {
-                    // Если A установлен в '#',
+                    // TODO Переделать работу с массивами (дело в том, что мы передаем ссылки на элементы, что не очень хорошо)
+                    // Если A установлен в '#'
                     if(operandsModes.first == 0) {
                         MemoryArray[calculateRound(
                             MEMORY_ARRAY_SIZE,
