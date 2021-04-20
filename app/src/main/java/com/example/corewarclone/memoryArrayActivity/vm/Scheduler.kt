@@ -39,6 +39,7 @@ class Scheduler {
     private lateinit var visualizer: Visualizer
     private var cycles = 0
     private val exec = Executor()
+    var modifiedInstructions = hashMapOf<Int, Int?>()
 
     // Функция для цикличной перестановки элементов в деке
     private fun shiftRound(deque: ArrayDeque<Task>) {
@@ -59,10 +60,12 @@ class Scheduler {
         // Результатом метода schedule является вывод той программы, которая смогла "остаться в живых". Или же null в случае ничьи
 
         while (cycles < CYCLES_UNTIL_TIE && !interrupted) {
+            visualizer.drawMemoryArray(interrupted)
             if (Warriors.count() == 1)
                 return Warriors.first()
             stepCycle()
-            visualizer.drawMemoryArray(interrupted)
+            visualizer.drawModifiedInstructions(modifiedInstructions, interrupted)
+
             cycles++
         }
 
@@ -76,6 +79,7 @@ class Scheduler {
 
     // TODO Переделать метод, добавив отображение текущих и измененных (?) инструкций
     fun stepCycle() {
+        modifiedInstructions = hashMapOf()
         for (warrior in Warriors) {
             if (warrior.taskQueue.isEmpty()) {
                 Warriors.remove(warrior)
@@ -87,6 +91,7 @@ class Scheduler {
             if (offset != null) {
                 val iP = task.instructionPointer
                 task.instructionPointer = calculateRound(MEMORY_ARRAY_SIZE, iP + offset)
+                modifiedInstructions[warrior.id] = exec.modifiedInstruction
             } else {
                 warrior.taskQueue.remove(task)
             }

@@ -117,7 +117,6 @@ class Loader {
 
             val warrior = Warrior()
             warrior.name = filePath.split(".").first()
-            warrior.id = warriorCount++
             val task = Task()
             task.instructionPointer = startIndex
             warrior.taskQueue = ArrayDeque()
@@ -125,8 +124,13 @@ class Loader {
             loadedWarriors = loadedWarriors + warrior
         }
 
-        loadedWarriors.toMutableList().shuffle()
-        Warriors = ArrayDeque(loadedWarriors.toMutableList())
+        val shuffledWarriors = loadedWarriors.toMutableList()
+        shuffledWarriors.shuffle()
+        Warriors = ArrayDeque(shuffledWarriors)
+
+        for(warrior in Warriors) {
+            warrior.id = warriorCount++
+        }
 
         return memoryArray
     }

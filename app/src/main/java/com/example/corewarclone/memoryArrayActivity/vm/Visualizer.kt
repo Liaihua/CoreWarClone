@@ -24,8 +24,8 @@ class Visualizer(context: Context) {
         (context as Activity).findViewById(R.id.memory_array_surface_view)
 
     // Массивы, используемые для рисования различимых ячеек программ
-    val warriorsColors = arrayOf(Color.RED, Color.BLUE)
-    var warriorsToColors : HashMap<Int, Int> = hashMapOf()
+    val warriorsColors = arrayOf(Color.BLUE or Color.GREEN, Color.RED or Color.GREEN)
+    var warriorsToColors: HashMap<Int, Int> = hashMapOf()
 
     // Наш массив с клетками - не единственная вещь, которая нас интересует
     // Обдумай, что мы будем рисовать:
@@ -87,8 +87,7 @@ class Visualizer(context: Context) {
         surfaceView.holder.unlockCanvasAndPost(canvas)
 
         // Инициализация цветов, используемых для программ
-        for ((counter, warrior) in Warriors.withIndex())
-        {
+        for ((counter, warrior) in Warriors.withIndex()) {
             warriorsToColors[warrior.id] = counter
         }
     }
@@ -110,8 +109,37 @@ class Visualizer(context: Context) {
             for (rectIndex in rectIndices) {
                 paint.color = warriorsColors[warriorsToColors[rectIndex.first]!!]
 
-                    val rect = rectangles[rectIndex.second]
-                    var canvas = surfaceView.holder?.lockCanvas(
+                val rect = rectangles[rectIndex.second]
+                var canvas = surfaceView.holder?.lockCanvas(
+                    Rect(
+                        rect.left.roundToInt(),
+                        rect.top.roundToInt(),
+                        rect.right.roundToInt(),
+                        rect.bottom.roundToInt()
+                    )
+                )
+                if (canvas != null) {
+                    canvas.drawRect(rect, paint)
+                    surfaceView.holder.unlockCanvasAndPost(canvas)
+                }
+
+            }
+        }
+    }
+
+    // Рисование измененных инструкций (крестик на черном фоне)
+    fun drawModifiedInstructions(modifiedInstructions : HashMap<Int, Int?>, interrupted: Boolean) {
+        if(!interrupted) {
+            val paint = Paint()
+            val rectIndices =
+                Warriors.filter { !it.taskQueue.isEmpty() }.map {
+                    Pair(it.id, modifiedInstructions[it.id])
+                }
+            for (rectIndex in rectIndices) {
+                if (rectIndex.second != null) {
+                    paint.color = Color.BLACK
+                    val rect = rectangles[rectIndex.second!!]
+                    val canvas = surfaceView.holder?.lockCanvas(
                         Rect(
                             rect.left.roundToInt(),
                             rect.top.roundToInt(),
@@ -119,11 +147,15 @@ class Visualizer(context: Context) {
                             rect.bottom.roundToInt()
                         )
                     )
-                    if (canvas != null) {
+                    if(canvas != null) {
                         canvas.drawRect(rect, paint)
+                        paint.color = warriorsColors[warriorsToColors[rectIndex.first]!!]
+                        canvas.drawLine(rect.left, rect.top, rect.right, rect.bottom, paint)
+                        canvas.drawLine(rect.left, rect.bottom, rect.right, rect.top, paint)
+
                         surfaceView.holder.unlockCanvasAndPost(canvas)
                     }
-
+                }
             }
         }
     }
