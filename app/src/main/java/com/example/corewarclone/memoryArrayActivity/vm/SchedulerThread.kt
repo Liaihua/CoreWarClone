@@ -14,7 +14,8 @@ class SchedulerThread(var loadedScheduler: Scheduler? = null, var context: Conte
         scheduler.interrupted = true
     }
     override fun run() {
-        scheduler.newVisualizerFromContext(context)
+        if(scheduler.visualizer == null)
+            scheduler.newVisualizerFromContext(context)
         val result = scheduler.schedule()
 
         if(scheduler.interrupted)

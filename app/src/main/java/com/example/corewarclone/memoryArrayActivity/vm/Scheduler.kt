@@ -38,7 +38,7 @@ class Task {
 class Scheduler {
     var interrupted: Boolean = false
 
-    private lateinit var visualizer: Visualizer
+    var visualizer: Visualizer? = null
     private var cycles = 0
     private val exec = Executor()
     var modifiedInstructions = hashMapOf<Int, Int?>()
@@ -51,9 +51,11 @@ class Scheduler {
         }
     }
 
+    fun getCycles() = cycles
+
     fun newVisualizerFromContext(context: Context) {
         visualizer = Visualizer(context)
-        visualizer.initializeMemoryArrayImage()
+        visualizer!!.initializeMemoryArrayImage()
     }
 
     // Я вот думаю, стоит ли мне добавлять сюда код для обновления графической части?
@@ -62,12 +64,12 @@ class Scheduler {
         // Результатом метода schedule является вывод той программы, которая смогла "остаться в живых". Или же null в случае ничьи
 
         while (cycles < CYCLES_UNTIL_TIE && !interrupted) {
-            visualizer.drawMemoryArray(interrupted)
+            visualizer!!.drawMemoryArray(interrupted)
             if (Warriors.count() == 1)
                 return Warriors.first()
             stepCycle()
-            visualizer.drawPreviousInstructions(interrupted)
-            visualizer.drawModifiedInstructions(modifiedInstructions, interrupted)
+            visualizer!!.drawPreviousInstructions(interrupted)
+            visualizer!!.drawModifiedInstructions(modifiedInstructions, interrupted)
 
             cycles++
         }
@@ -100,6 +102,25 @@ class Scheduler {
             }
             shiftRound(warrior.taskQueue)
         }
+    }
+
+    // Функция, используемая для исполнения инструкций по нажатию кнопки
+    fun stepExecution() : Warrior? {
+        if(cycles < CYCLES_UNTIL_TIE) {
+            visualizer!!.drawMemoryArray(interrupted)
+            if (Warriors.count() == 1) {
+                // Нужно найти способ подменить строчку внизу
+                return Warriors.first()
+            }
+
+            stepCycle()
+            visualizer!!.drawPreviousInstructions(interrupted)
+            visualizer!!.drawModifiedInstructions(modifiedInstructions, interrupted)
+
+            cycles++
+            return null
+        }
+        else return null
     }
 }
 
