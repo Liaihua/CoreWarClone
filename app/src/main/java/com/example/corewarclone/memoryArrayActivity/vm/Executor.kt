@@ -278,7 +278,8 @@ class Executor {
                 if(warrior.taskQueue.count() <= MAX_TASKS)
                 {
                     val newTask = Task()
-                    newTask.instructionPointer = operandsAddresses.first.toInt()
+                    newTask.instructionPointer = calculateRound(
+                        MEMORY_ARRAY_SIZE,task.instructionPointer + operandsAddresses.first.toInt())
                     warrior.taskQueue.add(newTask)
                 }
                 return 1

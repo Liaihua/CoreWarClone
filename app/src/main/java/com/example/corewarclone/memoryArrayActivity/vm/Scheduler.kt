@@ -19,6 +19,8 @@ class Warrior {
 
 class Task {
     var id: Int = 0
+    // Вопрос: а так ли нужен этот previousInstructionPointer?
+    var previousInstructionPointer : Int = -1
     var instructionPointer: Int = -1
 }
 
@@ -71,13 +73,12 @@ class Scheduler {
 
         cycles = 0
 
-        return if (Warriors.count() > 1)
+        return if (Warriors.count() > 1 || Warriors.count() == 0)
             null
         else
             Warriors.first()
     }
 
-    // TODO Переделать метод, добавив отображение текущих и измененных (?) инструкций
     fun stepCycle() {
         modifiedInstructions = hashMapOf()
         for (warrior in Warriors) {
@@ -90,6 +91,7 @@ class Scheduler {
             val offset = exec.execute(warrior, task, MemoryArray[task.instructionPointer])
             if (offset != null) {
                 val iP = task.instructionPointer
+                task.previousInstructionPointer = iP
                 task.instructionPointer = calculateRound(MEMORY_ARRAY_SIZE, iP + offset)
                 modifiedInstructions[warrior.id] = exec.modifiedInstruction
             } else {
