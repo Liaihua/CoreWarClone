@@ -92,7 +92,6 @@ class Visualizer(context: Context) {
         }
     }
 
-    // TODO Сделать наконец отрисовку массива
     // Я думаю, его можно использовать для обновления клеток, соответствующих выполненным инструкциям
     fun drawMemoryArray(interrupted: Boolean) {
         if (!interrupted) {

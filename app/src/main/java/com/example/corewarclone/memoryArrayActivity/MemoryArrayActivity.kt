@@ -8,7 +8,6 @@ import com.example.corewarclone.R
 import com.example.corewarclone.memoryArrayActivity.vm.*
 import kotlin.random.Random
 
-// TODO Выясни, как пользоваться SurfaceView
 class MemoryArrayActivity : AppCompatActivity() {
     private var scheduler = Scheduler()
     private var binariesList : List<String>? = null
@@ -21,8 +20,6 @@ class MemoryArrayActivity : AppCompatActivity() {
         binariesList = intent.getBundleExtra("BINARIES")
                              .getStringArray("BINARIES")?.toList()
         if (binariesList != null) {
-            // TODO Сделать инициализацию изображения игрового поля перед запуском игры
-            // Хотя, может и не стоит?
             schedulerThread = SchedulerThread(scheduler, context = this)
         }
         else
@@ -60,8 +57,6 @@ class MemoryArrayActivity : AppCompatActivity() {
     * пока я не вызову startExecution.
     * */
     fun stepExecution(view: View) {
-        // TODO Сделать реализацию пошогагового исполнения кода
-        // TODO Посмотреть null-значения
         if(!schedulerThread.isAlive) {
             if(loader == null) {
                 loader = Loader()

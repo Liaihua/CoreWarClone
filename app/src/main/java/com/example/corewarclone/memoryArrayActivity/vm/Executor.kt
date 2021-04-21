@@ -56,7 +56,6 @@ class Executor {
             }
             // <
             3 -> {
-                // TODO Переделать режим адресации, поскольку он декрементирует Int, а не Short
                 val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandA) + position)]
                 indirectInstruction.operandA = setOperandValue(indirectInstruction.operandA, (getOperandValue(indirectInstruction.operandA) - 1).toShort())
                 operandAAddress = getOperandValue(indirectInstruction.operandA)
@@ -152,7 +151,6 @@ class Executor {
 
             // ADD
             2.toByte() -> {
-                // TODO Переделай на присваивание вместо действий через += и -=
                 // Так как B является ссылкой на операнд назначения, нам нужен любой режим адресации, кроме явного
                 return if(operandsModes.second != 0) {
                     val processedInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]

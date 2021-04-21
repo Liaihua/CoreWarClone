@@ -4,8 +4,6 @@ import android.app.AlertDialog
 import android.content.Context
 import java.util.*
 
-// TODO Догадайся
-
 const val CYCLES_UNTIL_TIE = 100000
 const val MAX_TASKS = 64
 
@@ -68,6 +66,7 @@ class Scheduler {
             if (Warriors.count() == 1)
                 return Warriors.first()
             stepCycle()
+                // TODO Посмотреть, что будет, если переставить строку снизу вверх
             visualizer!!.drawPreviousInstructions(interrupted)
             visualizer!!.drawModifiedInstructions(modifiedInstructions, interrupted)
 
@@ -98,6 +97,7 @@ class Scheduler {
                 task.instructionPointer = calculateRound(MEMORY_ARRAY_SIZE, iP + offset)
                 modifiedInstructions[warrior.id] = exec.modifiedInstruction
             } else {
+                // Стоит ли сюда добавлять код по замене прямоугольника на черный?
                 warrior.taskQueue.remove(task)
             }
             shiftRound(warrior.taskQueue)
