@@ -66,6 +66,7 @@ class Scheduler {
             if (Warriors.count() == 1)
                 return Warriors.first()
             stepCycle()
+            visualizer.drawPreviousInstructions(interrupted)
             visualizer.drawModifiedInstructions(modifiedInstructions, interrupted)
 
             cycles++

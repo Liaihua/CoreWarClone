@@ -93,13 +93,8 @@ class Visualizer(context: Context) {
     }
 
     // TODO Сделать наконец отрисовку массива
-    // Я думаю, его можно использовать для обновления клеток, соответствующих инструкциям
+    // Я думаю, его можно использовать для обновления клеток, соответствующих выполненным инструкциям
     fun drawMemoryArray(interrupted: Boolean) {
-        // Проверка работы с массивом прямоугольников
-        // Ну и еще эксперименты с рисованием массива, не у нас здесь есть одна проблема:
-        // перед рисованием у нас идет фильтрация массива. Мы делаем ее КАЖДЫЙ РАЗ,
-        // ничего не записывая в промежуточный буфер. Плюс, мы КАЖДЫЙ РАЗ перерисовываем старые ячейки.
-        // Из-за этого рисование постепенно замедляется
         if (!interrupted) {
             val paint = Paint()
             var rectIndices =
@@ -120,9 +115,48 @@ class Visualizer(context: Context) {
                 )
                 if (canvas != null) {
                     canvas.drawRect(rect, paint)
+
+                    // Рисование текущей инструкции
+                    paint.color = Color.GRAY
+                    val center = Pair(rect.left + (rect.right - rect.left) / 2, rect.top + (rect.bottom - rect.top) / 2)
+                    canvas.drawRect(
+                        rect.left + (center.first - rect.left) / 2, rect.top + (center.second - rect.top) / 2,
+                        rect.right - (rect.right - center.first) / 2, rect.bottom - (rect.bottom - center.second) / 2,
+                        paint)
                     surfaceView.holder.unlockCanvasAndPost(canvas)
                 }
 
+            }
+        }
+    }
+
+    // Функция, которая перерисовывает предыдущую (выполненную) инструкцию
+    fun drawPreviousInstructions(interrupted: Boolean) {
+        if (!interrupted) {
+            val paint = Paint()
+            var rectIndices =
+                Warriors.filter { !it.taskQueue.isEmpty() }.map {
+                    Pair(it.id, it.taskQueue.first.previousInstructionPointer)
+                }
+            for (rectIndex in rectIndices) {
+                if(rectIndex.second != -1) {
+                    paint.color = warriorsColors[warriorsToColors[rectIndex.first]!!]
+
+                    val rect = rectangles[rectIndex.second]
+                    var canvas = surfaceView.holder?.lockCanvas(
+                        Rect(
+                            rect.left.roundToInt(),
+                            rect.top.roundToInt(),
+                            rect.right.roundToInt(),
+                            rect.bottom.roundToInt()
+                        )
+                    )
+                    if (canvas != null) {
+                        canvas.drawRect(rect, paint)
+
+                        surfaceView.holder.unlockCanvasAndPost(canvas)
+                    }
+                }
             }
         }
     }
