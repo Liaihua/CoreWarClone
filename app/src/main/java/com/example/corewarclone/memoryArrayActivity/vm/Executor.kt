@@ -174,8 +174,8 @@ class Executor {
                     val processedInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
                     processedInstruction.operandB = setOperandValue(
                         processedInstruction.operandB,
-                        (MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA.toShort() -
-                                getOperandValue(processedInstruction.operandB)).toShort())
+                        (getOperandValue(processedInstruction.operandB)).toShort() - 
+			    MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA.toShort())
                     modifiedInstruction = calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)
                     1
                 }

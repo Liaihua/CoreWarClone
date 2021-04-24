@@ -12,7 +12,8 @@ import com.example.corewarclone.R
 import java.util.regex.Pattern
 
 class TextProcessor @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = R.attr.editTextStyle) : AppCompatEditText(context, attrs, defStyleAttr) {
-    private val KEYWORDS = Pattern.compile("\\b(mov|str)") // продолжи другими opcode'ми
+    private val KEYWORDS = Pattern.compile("\\b(dat|mov|add|sub|jmp|jmz|jmn|djn|cmp|spl)\\b") // продолжи другими opcode'ми
+    private val ADDRESS_MODES = Pattern.compile("(#|$|@|<)")
     private val textWatcher: TextWatcher
     init {
         textWatcher = object : TextWatcher {
