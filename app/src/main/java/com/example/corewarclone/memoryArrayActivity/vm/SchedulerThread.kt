@@ -37,7 +37,6 @@ class SchedulerThread(var loadedScheduler: Scheduler? = null, var context: Conte
                     (context as Activity).finish()
                 }
             })
-            // TODO Не работает
             alertDialog.setOnCancelListener {
                 run { (context as Activity).finish() }
             }

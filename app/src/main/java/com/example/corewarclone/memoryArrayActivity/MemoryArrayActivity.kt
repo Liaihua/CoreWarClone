@@ -38,7 +38,7 @@ class MemoryArrayActivity : AppCompatActivity() {
 
     fun startExecution(view: View) {
         if (!schedulerThread.isAlive) {
-            if(binariesList != null) { // TODO Убрать всякие отладочные штуки (вроде iP-шников и инструкций)
+            if(binariesList != null) {
                 val warriorsRecyclerView = findViewById<RecyclerView>(R.id.warriors_recycler_view)
                 for (item in 0 until warriorsRecyclerView.adapter!!.itemCount) {
                     val warriorViewHolder =
