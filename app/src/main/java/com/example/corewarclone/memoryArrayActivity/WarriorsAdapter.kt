@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.corewarclone.R
+import com.example.corewarclone.memoryArrayActivity.vm.Decompiler
 import com.example.corewarclone.memoryArrayActivity.vm.MemoryArray
 import com.example.corewarclone.memoryArrayActivity.vm.Warrior
 import com.example.corewarclone.memoryArrayActivity.vm.Warriors
@@ -14,6 +15,7 @@ import com.example.corewarclone.memoryArrayActivity.vm.Warriors
 class WarriorsAdapter : RecyclerView.Adapter<WarriorsAdapter.ViewHolder>(){
     var warriors = Warriors ?: null
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val decompiler = Decompiler
 
         var warrior: Warrior? = null
         val warriorNameTextView = view.findViewById<TextView>(R.id.warrior_name_text_view)
@@ -30,9 +32,8 @@ class WarriorsAdapter : RecyclerView.Adapter<WarriorsAdapter.ViewHolder>(){
                 warriorNameTextView.text = warrior.name
                 warriorTaskTextView.text = warrior.taskQueue.first.id.toString()
                 var instruction = MemoryArray[warrior.taskQueue.first.instructionPointer]
-                // TODO Заменить на более удобное для чтения представление (скорее всего, понадобится дизассемблер)
                 warriorInstructionTextView.text =
-                    "${instruction.opcode} ${instruction.operandA}, ${instruction.operandB}"
+                    decompiler.decompileInstruction(instruction)
                 warriorInstructionPointerTextView.text =
                     warrior.taskQueue.first.instructionPointer.toString()
             }
