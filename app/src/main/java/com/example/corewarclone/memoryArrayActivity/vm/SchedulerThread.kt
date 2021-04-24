@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.DialogInterface
 import com.example.corewarclone.R
 
-// TODO Решить вопрос с отображением диалогового окна (возможно, с использованием доп. потока и join'ом)
 class SchedulerThread(var loadedScheduler: Scheduler? = null, var context: Context) : Thread() {
     private var scheduler : Scheduler = loadedScheduler ?: Scheduler()
     override fun interrupt() {
@@ -21,19 +20,28 @@ class SchedulerThread(var loadedScheduler: Scheduler? = null, var context: Conte
         if(scheduler.interrupted)
             return
 
-        val alertDialog = AlertDialog.Builder(context)
+        showDialog(result)
+    }
 
-        if(result == null) {
-            alertDialog.setMessage(R.string.tie_string)
-        }
-        else {
-            alertDialog.setMessage("${R.string.winner_string} ${result.name}")
-        }
-        alertDialog.setPositiveButton("OK", DialogInterface.OnClickListener {_,_ ->
-            run {
-                (context as Activity).finish()
+    fun showDialog(result: Warrior?) {
+        (context as Activity).runOnUiThread {
+            val alertDialog = AlertDialog.Builder(context)
+
+            if (result == null) {
+                alertDialog.setMessage(R.string.tie_string)
+            } else {
+                alertDialog.setMessage("${context.getString(R.string.winner_string)} ${result.name}")
             }
-        })
-        alertDialog.show()
+            alertDialog.setPositiveButton("OK", DialogInterface.OnClickListener { _, _ ->
+                run {
+                    (context as Activity).finish()
+                }
+            })
+            // TODO Не работает
+            alertDialog.setOnCancelListener {
+                run { (context as Activity).finish() }
+            }
+            alertDialog.show()
+        }
     }
 }

@@ -75,7 +75,7 @@ class Parser {
         var lineCount = 0
         var instructionCount = 0
         while(lineCount <= instructions.lastIndex) {
-            if(instructions[lineCount].isBlank()) {
+            if(preprocessComments(instructions[lineCount]).isBlank()) {
                 lineCount++
                 continue
             }

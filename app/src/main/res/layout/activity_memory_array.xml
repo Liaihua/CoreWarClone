@@ -19,12 +19,12 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/warriors_recycler_view"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@color/cardview_dark_background"
         app:layout_constraintRight_toLeftOf="@id/memory_array_buttons"
-        app:layout_constraintLeft_toRightOf="@id/memory_array_surface_view"/>
+        app:layout_constraintLeft_toRightOf="@id/memory_array_surface_view" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/memory_array_buttons"

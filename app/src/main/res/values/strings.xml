@@ -22,4 +22,5 @@
     <string name="delete_file_dialog_positive">DELETE</string>
     <string name="tie_string">It\'s a tie!</string>
     <string name="winner_string">The winner is:</string>
+    <string name="task_num_string">Task:</string>
 </resources>

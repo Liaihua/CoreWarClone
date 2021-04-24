@@ -2,11 +2,11 @@ package com.example.corewarclone.memoryArrayActivity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.SurfaceView
 import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.corewarclone.R
 import com.example.corewarclone.memoryArrayActivity.vm.*
-import kotlin.random.Random
 
 class MemoryArrayActivity : AppCompatActivity() {
     private var scheduler = Scheduler()
@@ -20,7 +20,17 @@ class MemoryArrayActivity : AppCompatActivity() {
         binariesList = intent.getBundleExtra("BINARIES")
                              .getStringArray("BINARIES")?.toList()
         if (binariesList != null) {
+            if(loader == null) {
+                loader = Loader()
+                MemoryArray = loader!!.initializeMemoryArray(binariesList!!)
+            }
             schedulerThread = SchedulerThread(scheduler, context = this)
+
+            val warriorsAdapter = WarriorsAdapter()
+
+            val warriorsRecyclerView = findViewById<RecyclerView>(R.id.warriors_recycler_view)
+            warriorsRecyclerView.adapter = warriorsAdapter
+            warriorsRecyclerView.layoutManager = LinearLayoutManager(this)
         }
         else
             finish()
@@ -28,12 +38,14 @@ class MemoryArrayActivity : AppCompatActivity() {
 
     fun startExecution(view: View) {
         if (!schedulerThread.isAlive) {
-            if(binariesList != null) {
-                if(loader == null) {
-                    loader = loader ?: Loader()
-                    MemoryArray = loader!!.initializeMemoryArray(binariesList!!)
-                    // TODO Сделать отображение диалогового окна без необходимости в runOnUiThread
+            if(binariesList != null) { // TODO Убрать всякие отладочные штуки (вроде iP-шников и инструкций)
+                val warriorsRecyclerView = findViewById<RecyclerView>(R.id.warriors_recycler_view)
+                for (item in 0 until warriorsRecyclerView.adapter!!.itemCount) {
+                    val warriorViewHolder =
+                        (warriorsRecyclerView.findViewHolderForAdapterPosition(item) as WarriorsAdapter.ViewHolder)
+                    warriorViewHolder.removeDebugTextViews()
                 }
+
                 schedulerThread.start()
             }
             else
@@ -58,13 +70,15 @@ class MemoryArrayActivity : AppCompatActivity() {
     * */
     fun stepExecution(view: View) {
         if(!schedulerThread.isAlive) {
-            if(loader == null) {
-                loader = Loader()
-                MemoryArray = loader!!.initializeMemoryArray(binariesList!!)
-            }
+
             if (scheduler.visualizer == null)
                 scheduler.newVisualizerFromContext(this)
-            scheduler.stepExecution()
+
+            val result = scheduler.stepExecution()
+            findViewById<RecyclerView>(R.id.warriors_recycler_view).adapter?.notifyDataSetChanged()
+            if(result != null) {
+                schedulerThread.showDialog(result)
+            }
         }
     }
 }

@@ -13,12 +13,14 @@ class Warrior {
     var id: Int = 0
     var name: String = ""
     var taskQueue: ArrayDeque<Task> = ArrayDeque()
+    var taskCounter: Int = 0
 }
 
 class Task {
     var id: Int = 0
+
     // Вопрос: а так ли нужен этот previousInstructionPointer?
-    var previousInstructionPointer : Int = -1
+    var previousInstructionPointer: Int = -1
     var instructionPointer: Int = -1
 }
 
@@ -62,13 +64,16 @@ class Scheduler {
         // Результатом метода schedule является вывод той программы, которая смогла "остаться в живых". Или же null в случае ничьи
 
         while (cycles < CYCLES_UNTIL_TIE && !interrupted) {
-            visualizer!!.drawMemoryArray(interrupted)
+
             if (Warriors.count() == 1)
                 return Warriors.first()
             stepCycle()
-                // TODO Посмотреть, что будет, если переставить строку снизу вверх
+
             visualizer!!.drawPreviousInstructions(interrupted)
             visualizer!!.drawModifiedInstructions(modifiedInstructions, interrupted)
+            visualizer!!.drawMemoryArray(interrupted)
+
+
 
             cycles++
         }
@@ -98,6 +103,7 @@ class Scheduler {
                 modifiedInstructions[warrior.id] = exec.modifiedInstruction
             } else {
                 // Стоит ли сюда добавлять код по замене прямоугольника на черный?
+                visualizer!!.drawExitedInstruction(task.instructionPointer, interrupted)
                 warrior.taskQueue.remove(task)
             }
             shiftRound(warrior.taskQueue)
@@ -105,22 +111,22 @@ class Scheduler {
     }
 
     // Функция, используемая для исполнения инструкций по нажатию кнопки
-    fun stepExecution() : Warrior? {
-        if(cycles < CYCLES_UNTIL_TIE) {
+    fun stepExecution(): Warrior? {
+        if (cycles < CYCLES_UNTIL_TIE) {
+
+            stepCycle()
+
+            visualizer!!.drawPreviousInstructions(interrupted)
+            visualizer!!.drawModifiedInstructions(modifiedInstructions, interrupted)
             visualizer!!.drawMemoryArray(interrupted)
+
             if (Warriors.count() == 1) {
-                // Нужно найти способ подменить строчку внизу
                 return Warriors.first()
             }
 
-            stepCycle()
-            visualizer!!.drawPreviousInstructions(interrupted)
-            visualizer!!.drawModifiedInstructions(modifiedInstructions, interrupted)
-
             cycles++
             return null
-        }
-        else return null
+        } else return null
     }
 }
 
