@@ -174,9 +174,9 @@ class Executor {
                     val processedInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
                     processedInstruction.operandB = setOperandValue(
                         processedInstruction.operandB,
-                        (getOperandValue(processedInstruction.operandB)).toShort() - 
-			    MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA.toShort())
-                    modifiedInstruction = calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)
+                        (getOperandValue(processedInstruction.operandB) -
+			        MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer)].operandA.toShort()).toShort())
+                                modifiedInstruction = calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)
                     1
                 }
                 else {
@@ -220,7 +220,7 @@ class Executor {
                 // 1. Мы уменьшаем значение из B
                 // 2. Затем делаем проверку на B != 0
                 instruction.operandB = setOperandValue(instruction.operandB, (getOperandValue(instruction.operandB) - 1).toShort())
-                if(instruction.operandB != 0) {
+                if(getOperandValue(instruction.operandB) != 0.toShort()) {
                     operandsAddresses.first.toInt()
                 }
                 else {

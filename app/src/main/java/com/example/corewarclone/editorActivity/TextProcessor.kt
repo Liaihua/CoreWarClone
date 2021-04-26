@@ -18,14 +18,16 @@ class TextProcessor @JvmOverloads constructor(context: Context, attrs: Attribute
     init {
         textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, after: Int) {println(s)}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, after: Int) {processText(text!!)}
             override fun afterTextChanged(s: Editable?) {
                 syntaxHighlight()
             }
         }
+        //addTextChangedListener(textWatcher)
     }
     private fun syntaxHighlight() {
         val matcher = KEYWORDS.matcher(text)
+
         matcher.region(0, text!!.length)
         while(matcher.find()){
             text!!.setSpan(
@@ -36,9 +38,9 @@ class TextProcessor @JvmOverloads constructor(context: Context, attrs: Attribute
             )
         }
     }
-    fun processText(newText: String) {
+    fun processText(newText: Editable) {
         removeTextChangedListener(textWatcher)
-        setText(newText)
+        text = newText
         addTextChangedListener(textWatcher)
     }
 }
