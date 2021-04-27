@@ -220,7 +220,7 @@ class Executor {
                 // 1. Мы уменьшаем значение из B
                 // 2. Затем делаем проверку на B != 0
                 instruction.operandB = setOperandValue(instruction.operandB, (getOperandValue(instruction.operandB) - 1).toShort())
-                if(getOperandValue(instruction.operandB) != 0.toShort()) {
+                return if(getOperandValue(instruction.operandB) != 0.toShort()) {
                     operandsAddresses.first.toInt()
                 }
                 else {
