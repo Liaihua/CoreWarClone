@@ -51,14 +51,16 @@ class Executor {
             }
             // @
             2 -> {
-                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandA) + position)]
-                operandAAddress = (getOperandValue(indirectInstruction.operandA) - 1.toShort()).toShort()
+                val indirectInstructionIndex = calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandA) + position)
+                val indirectInstruction = MemoryArray[indirectInstructionIndex]
+                operandAAddress = ((indirectInstructionIndex + getOperandValue(indirectInstruction.operandA)) - position).toShort()
             }
             // <
             3 -> {
-                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandA) + position)]
+                val indirectInstructionIndex = calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandA) + position)
+                val indirectInstruction = MemoryArray[indirectInstructionIndex]
                 indirectInstruction.operandA = setOperandValue(indirectInstruction.operandA, (getOperandValue(indirectInstruction.operandA) - 1).toShort())
-                operandAAddress = getOperandValue(indirectInstruction.operandA)
+                operandAAddress = ((indirectInstructionIndex + getOperandValue(indirectInstruction.operandA)) - position).toShort()
             }
             else -> return null
 
@@ -76,14 +78,16 @@ class Executor {
             }
             // @
             2 -> {
-                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandB) + position)]
-                operandBAddress = (getOperandValue(indirectInstruction.operandB) - 1.toShort()).toShort()
+                val indirectInstructionIndex = calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandB) + position)
+                val indirectInstruction = MemoryArray[indirectInstructionIndex]
+                operandBAddress = ((indirectInstructionIndex + getOperandValue(indirectInstruction.operandB)) - position).toShort()
             }
             // <
             3 -> {
-                val indirectInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandB) + position)]
-                indirectInstruction.operandB = setOperandValue(indirectInstruction.operandB,  (getOperandValue(indirectInstruction.operandB) - 1).toShort())
-                operandBAddress = getOperandValue(indirectInstruction.operandB)
+                val indirectInstructionIndex = calculateRound(MEMORY_ARRAY_SIZE, getOperandValue(instruction.operandB) + position)
+                val indirectInstruction = MemoryArray[indirectInstructionIndex]
+                indirectInstruction.operandB = setOperandValue(indirectInstruction.operandB, (getOperandValue(indirectInstruction.operandB) - 1).toShort())
+                operandBAddress = ((indirectInstructionIndex + getOperandValue(indirectInstruction.operandB)) - position).toShort()
             }
             else -> return null
         }
@@ -138,11 +142,16 @@ class Executor {
                         val movedInstruction =
                         MemoryArray[calculateRound(
                             MEMORY_ARRAY_SIZE,
-                            task.instructionPointer + operandsAddresses.second
+                            task.instructionPointer + operandsAddresses.first
                         )]
-                        movedInstruction.opcode = instruction.opcode
-                        movedInstruction.operandA = instruction.operandA
-                        movedInstruction.operandB = instruction.operandB
+                        val destinationInstruction =
+                            MemoryArray[calculateRound(
+                                MEMORY_ARRAY_SIZE,
+                                task.instructionPointer + operandsAddresses.second
+                            )]
+                        destinationInstruction.opcode = movedInstruction.opcode
+                        destinationInstruction.operandA = movedInstruction.operandA
+                        destinationInstruction.operandB = movedInstruction.operandB
                     }
                     modifiedInstruction = calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)
                     return 1
@@ -217,10 +226,11 @@ class Executor {
 
             // DJN
             7.toByte() -> {
-                // 1. Мы уменьшаем значение из B
+                // 1. Мы уменьшаем значение по адресу из B
                 // 2. Затем делаем проверку на B != 0
-                instruction.operandB = setOperandValue(instruction.operandB, (getOperandValue(instruction.operandB) - 1).toShort())
-                return if(getOperandValue(instruction.operandB) != 0.toShort()) {
+                val referredInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
+                referredInstruction.operandB = setOperandValue(referredInstruction.operandB, (getOperandValue(referredInstruction.operandB) - 1).toShort())
+                return if(getOperandValue(referredInstruction.operandB) != 0.toShort()) {
                     operandsAddresses.first.toInt()
                 }
                 else {
