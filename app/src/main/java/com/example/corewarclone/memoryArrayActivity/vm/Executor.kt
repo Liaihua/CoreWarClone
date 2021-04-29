@@ -126,8 +126,6 @@ class Executor {
                     return null
                 }
                 else {
-                    // TODO Переделать работу с массивами (дело в том, что в некоторых местах мы передаем ССЫЛКИ на элементы, а не ЗНАЧЕНИЯ, что не очень хорошо)
-                        // И это касается не только MOV'a
                     // Если A установлен в '#'
                     if(operandsModes.first == 0) {
                         val movedInstruction =
@@ -196,31 +194,45 @@ class Executor {
             // JMP
             4.toByte() -> {
                 // Здесь мы просто возвращаем адрес текущей инструкции + адрес, взятый из операнда A
-                return operandsAddresses.first.toInt()
+                if(operandsModes.first != 0)
+                    return operandsAddresses.first.toInt()
             }
 
             // JMZ
             5.toByte() -> {
                 // Повторяем предыдущий пункт, предварительно делая проверку B == 0?
-                return if(getOperandValue(
-                        MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
-                            .operandB) == 0.toShort()) {
-                    operandsAddresses.first.toInt()
-                } else {
-                    1
+                if(operandsModes.first != 0) {
+                    return if (getOperandValue(
+                            MemoryArray[calculateRound(
+                                MEMORY_ARRAY_SIZE,
+                                task.instructionPointer + operandsAddresses.second
+                            )]
+                                .operandB
+                        ) == 0.toShort()
+                    ) {
+                        operandsAddresses.first.toInt()
+                    } else {
+                        1
+                    }
                 }
             }
 
             // JMN
             6.toByte() -> {
                 // Теперь наоборот, B != 0
-                return if(getOperandValue(
-                        MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
-                            .operandB) != 0.toShort()) {
-                    operandsAddresses.first.toInt()
-                }
-                else {
-                    1
+                if(operandsModes.first != 0) {
+                    return if (getOperandValue(
+                            MemoryArray[calculateRound(
+                                MEMORY_ARRAY_SIZE,
+                                task.instructionPointer + operandsAddresses.second
+                            )]
+                                .operandB
+                        ) != 0.toShort()
+                    ) {
+                        operandsAddresses.first.toInt()
+                    } else {
+                        1
+                    }
                 }
             }
 
@@ -228,13 +240,20 @@ class Executor {
             7.toByte() -> {
                 // 1. Мы уменьшаем значение по адресу из B
                 // 2. Затем делаем проверку на B != 0
-                val referredInstruction = MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)]
-                referredInstruction.operandB = setOperandValue(referredInstruction.operandB, (getOperandValue(referredInstruction.operandB) - 1).toShort())
-                return if(getOperandValue(referredInstruction.operandB) != 0.toShort()) {
-                    operandsAddresses.first.toInt()
-                }
-                else {
-                    1
+                if(operandsModes.first != 0) {
+                    val referredInstruction = MemoryArray[calculateRound(
+                        MEMORY_ARRAY_SIZE,
+                        task.instructionPointer + operandsAddresses.second
+                    )]
+                    referredInstruction.operandB = setOperandValue(
+                        referredInstruction.operandB,
+                        (getOperandValue(referredInstruction.operandB) - 1).toShort()
+                    )
+                    return if (getOperandValue(referredInstruction.operandB) != 0.toShort()) {
+                        operandsAddresses.first.toInt()
+                    } else {
+                        1
+                    }
                 }
             }
 
@@ -283,15 +302,18 @@ class Executor {
 
             // SPL
             9.toByte() -> {
-                if(warrior.taskQueue.count() <= MAX_TASKS)
-                {
-                    val newTask = Task()
-                    newTask.instructionPointer = calculateRound(
-                        MEMORY_ARRAY_SIZE,task.instructionPointer + operandsAddresses.first.toInt())
-                    newTask.id = ++warrior.taskCounter
-                    warrior.taskQueue.add(newTask)
+                if(operandsModes.first != 0) {
+                    if (warrior.taskQueue.count() <= MAX_TASKS) {
+                        val newTask = Task()
+                        newTask.instructionPointer = calculateRound(
+                            MEMORY_ARRAY_SIZE,
+                            task.instructionPointer + operandsAddresses.first.toInt()
+                        )
+                        newTask.id = ++warrior.taskCounter
+                        warrior.taskQueue.add(newTask)
+                    }
+                    return 1
                 }
-                return 1
             }
         }
         return null
