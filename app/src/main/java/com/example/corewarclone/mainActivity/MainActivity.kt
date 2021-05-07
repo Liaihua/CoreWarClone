@@ -69,9 +69,10 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(intent, ACTION_CHOOSE_DIR)
             true
         }
-        R.id.settings_menu_item -> {
-            true
-        }
+        // Папочка тебя не забудет
+        //R.id.settings_menu_item -> {
+        //    true
+        //}
         else -> super.onOptionsItemSelected(item)
     }
 

@@ -4,8 +4,9 @@
     <item
         android:id="@+id/choose_folder_menu_item"
         android:title="@string/choose_folder_menu_item_title"/>
-    <item
+    <!-- Пусть она пока побудет здесь-->
+    <!--<item
         android:id="@+id/settings_menu_item"
-        android:title="@string/settings_menu_item" />
+        android:title="@string/settings_menu_item" /> -->
 
 </menu>
