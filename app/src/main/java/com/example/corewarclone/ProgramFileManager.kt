@@ -33,6 +33,12 @@ object ProgramFileManager {
     var contextDir: File? = null
     // Переменная для хранения используемой приложением папки для прог
     var currentDir: String? = null
+        get() {
+            return if (field != null && File(field!!).exists())
+                field
+            else
+                null
+        }
 
     fun getDirectoryPathFromUri(context: Context, pathUri: Uri) : String? {
         if(pathUri.scheme == "file")
@@ -130,19 +136,21 @@ object ProgramFileManager {
         {
             return currentDir
         }
-        else
-        {
+        else {
             val internalFile = File(contextDir, "current_dir.txt") // Замени строку на переменную
-            if(!internalFile.exists())
-            {
+            if (!internalFile.exists()) {
                 internalFile.createNewFile()
                 return null
             }
             val internalFileText = internalFile.readText()
-            if(internalFileText.isBlank())
+            if (internalFileText.isBlank())
                 return null
-            currentDir = internalFileText
-            return internalFileText
+
+            return if (File(internalFileText).exists()) {
+                currentDir = internalFileText
+                internalFileText
+            } else
+                null
         }
     }
 
