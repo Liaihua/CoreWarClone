@@ -263,9 +263,9 @@ class Executor {
                 // Оба значения заданы явно
                 return if(operandsModes == Pair(0, 0)) {
                     if(getOperandValue(instruction.operandA) == getOperandValue(instruction.operandB))
-                        2
-                    else
                         1
+                    else
+                        2
 
                 }
                 else
@@ -274,27 +274,27 @@ class Executor {
                     if(operandsModes.first == 0) {
                         if(getOperandValue(instruction.operandA) == getOperandValue(MemoryArray[calculateRound(
                                 MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)].operandB)) {
-                            2
+                            1
                         }
                         else {
-                            1
+                            2
                         }
                     } else if(operandsModes.second == 0) {
                         if (getOperandValue(instruction.operandB) == getOperandValue(MemoryArray[calculateRound(
                                 MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.first)].operandA)) {
-                            2
+                            1
                         }
                         else {
-                            1
+                            2
                         }
                     }
                     else {
                         if(getOperandValue(MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.first)].operandA)
                             == getOperandValue(MemoryArray[calculateRound(MEMORY_ARRAY_SIZE, task.instructionPointer + operandsAddresses.second)].operandB)) {
-                            2
+                            1
                         }
                         else {
-                            1
+                            2
                         }
                     }
                 }
