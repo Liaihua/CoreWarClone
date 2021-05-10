@@ -9,10 +9,6 @@ class Executor {
     // @ - 2,
     // < - 3
 
-    // TODO Сделать проверку на наличие багов во время всяких присваиваний
-    // (А если более конкретно, то проверку на перезапись режимов адресации
-    // (хотя кто знает, что еще мне попадется))
-
     var modifiedInstruction: Int? = null
 
     private fun getOperandValue(operand: Int) : Short {
@@ -122,6 +118,7 @@ class Executor {
             // MOV
             1.toByte() -> {
                 // Проверка операнда B на правильный режим адресации. Если неправильный - задача завершается
+                // TODO Посмотри режим адресации с декрементом
                 if(operandsModes.second == 0) {
                     return null
                 }
@@ -133,7 +130,7 @@ class Executor {
                             MEMORY_ARRAY_SIZE,
                             task.instructionPointer + operandsAddresses.second
                         )]
-                        movedInstruction.operandA = setOperandValue(movedInstruction.operandA, instruction.operandA.toShort())
+                        movedInstruction.operandB = setOperandValue(movedInstruction.operandB, instruction.operandA.toShort())
                     }
                     // Если A установлен в другие режимы
                     else {
